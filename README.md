@@ -122,7 +122,7 @@ cd .\postgres; docker compose -f postgres-compose.yaml down; cd ..
 cd .\pentaho; docker compose -f pentaho-compose.yaml down; cd ..
 ```
 
-O simplemente desde Docker Desktop → tapa los contenedores.
+O simplemente desde Docker Desktop, apagar los contenedores.
 
 ---
 
