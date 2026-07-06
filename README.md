@@ -151,6 +151,3 @@ Write-Host "[LISTO] Entorno encendido" -ForegroundColor Green
 
 ---
 
-<div align="center">
-  <sub>Hecho con ❤️ para el equipo de BI</sub>
-</div>
