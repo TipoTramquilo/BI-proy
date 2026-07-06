@@ -1,0 +1,8 @@
+# Postgres data persistence (auto-created)
+postgres/data/
+
+# Pentaho ETL workspace (auto-created)
+pentaho/mis_procesos/
+
+# Original instructions (not needed in the repo)
+explain.txt

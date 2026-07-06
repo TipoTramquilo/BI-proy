@@ -1,0 +1,19 @@
+services:
+  pentaho_spoon:
+    image: hiromuhota/webspoon:latest
+    container_name: pentaho_spoon_gui
+    restart: always
+    ports:
+      - "5800:8080" # Mapea el puerto interno 8080 al 5800 de tu Windows
+    volumes:
+      # Mapea tus archivos locales a la ruta real de persistencia .kettle
+      - ./mis_procesos:/home/tomcat/.kettle
+      # Ruta anterior de referencia:
+      # - ./mis_procesos:/jobs
+    networks:
+      - red_compartida
+
+networks:
+  red_compartida:
+    name: red_datos
+    external: true

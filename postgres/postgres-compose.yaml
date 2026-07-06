@@ -1,0 +1,35 @@
+services:
+  postgres_db:
+    image: postgres:18-alpine
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      # Se guarda justo en la carpeta actual donde está parado este archivo
+      - ./data:/var/lib/postgresql/data
+    networks:
+      - red_compartida
+
+  pgadmin_panel:
+    image: dpage/pgadmin4:9
+    container_name: pgadmin_panel
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@correo.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8081:80"
+    depends_on:
+      - postgres_db
+    networks:
+      - red_compartida
+
+networks:
+  red_compartida:
+    name: red_datos
+    external: true
