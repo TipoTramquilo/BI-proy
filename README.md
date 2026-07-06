@@ -7,7 +7,7 @@
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
 ![pgAdmin](https://img.shields.io/badge/pgAdmin_4-9-1E8CBE?style=for-the-badge&logo=postgresql&logoColor=white)
-![Pentaho](https://img.shields.io/badge/Pentaho_Spoon-latest-FF5E00?style=for-the-badge&logoColor=white)
+![Pentaho](https://img.shields.io/badge/Pentaho_Spoon-0.9.0-FF5E00?style=for-the-badge&logoColor=white)
 ![PowerShell](https://img.shields.io/badge/PowerShell-7.4-5391FE?style=for-the-badge&logo=powershell&logoColor=white)
 ![WSL2](https://img.shields.io/badge/WSL_2-4EAA25?style=for-the-badge&logo=linux&logoColor=white)
 
