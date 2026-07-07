@@ -27,12 +27,15 @@
 ```
 D:\DockerData\bi\
 ├── postgres\
-│   ├── postgres-compose.yaml   ← Base de datos + pgAdmin 4
-│   └── data\                   ← Datos persistentes (se crea sola)
+│   ├── postgres-compose.yaml  <- Base de datos + pgAdmin 4
+│   ├── db_setup\              <- Scripts SQL e hidratacion
+│   └── data\                  <- Datos persistentes
 ├── pentaho\
-│   ├── pentaho-compose.yaml    ← Pentaho Spoon web
-│   └── mis_procesos\           ← Tus .ktr, .kjb, .js (se crea sola)
-└── run.ps1                     ← Script encender todo
+│   ├── pentaho-compose.yaml   <- Pentaho Spoon web
+│   └── mis_procesos\          <- .ktr, .kjb, .js
+├── run.ps1                    <- Encender todo
+├── stop.ps1                   <- Detener contenedores (menu)
+└── menu.ps1                   <- Menu principal
 ```
 
 ---
@@ -55,25 +58,33 @@ Luego confirma con `S` (Sí). A partir de ese momento podrás ejecutar cualquier
 
 ---
 
-## 🚦 Flujo de trabajo diario (encender)
+## 🚦 Flujo de trabajo diario
 
 Desde la raíz del proyecto (`D:\DockerData\bi\`):
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\run.ps1
+.\menu.ps1
 ```
 
-Si ya configuraste la **ExecutionPolicy** como se indicó arriba, basta con:
+Esto abre un menu con todas las operaciones del entorno:
+
+1. **Iniciar entorno** — ejecuta `run.ps1` (red, PostgreSQL, pgAdmin, Pentaho).
+2. **Detener entorno** — ejecuta `stop.ps1` con opcion de borrar volumenes.
+3. **Hidratar base de datos** — ejecuta `run_hidratation.ps1` para poblar la BD con datos de prueba.
+4. **Salir**
+
+Si se prefiere ejecutar un paso directamente:
 
 ```powershell
-.\run.ps1
+.\run.ps1    # Solo encender
+.\stop.ps1   # Solo detener
 ```
 
-### ¿Qué hace el script?
+Si ya configuraste la **ExecutionPolicy** como se indicó arriba, basta con el nombre del script. Caso contrario:
 
-1. Verifica que la **red `red_datos`** exista en Docker; si no, la crea automáticamente.
-2. Levanta **PostgreSQL + pgAdmin** en segundo plano.
-3. Levanta **Pentaho Spoon** (interfaz web).
+```powershell
+powershell -ExecutionPolicy Bypass -File .\menu.ps1
+```
 
 ---
 
@@ -110,44 +121,62 @@ D:\DockerData\bi\pentaho\mis_procesos\
 
 ---
 
-## 🛑 Apagar el entorno
+## 💧 Hidratar la base de datos
 
-Cuando termines tu jornada y quieras liberar recursos:
-
-```powershell
-cd .\postgres; docker compose -f postgres-compose.yaml down; cd ..
-```
+Una vez que el entorno esta encendido, puebla la BD con datos de prueba (200 clientes, 2000 contratos, etc.):
 
 ```powershell
-cd .\pentaho; docker compose -f pentaho-compose.yaml down; cd ..
+.\postgres\db_setup\run_hidratation.ps1
 ```
 
-O simplemente desde Docker Desktop, apagar los contenedores.
+O desde el menu principal (`.\menu.ps1`), opcion **3**.
+
+El script crea el esquema `SEGURO_G28310422` con 12 tablas (paises, ciudades, sucursales, productos, clientes, contratos, siniestros, evaluaciones) y lo llena con datos realistas.
 
 ---
 
-## 📜 Referencia del script
+## 🛑 Apagar el entorno
+
+```powershell
+.\stop.ps1
+```
+
+Menu interactivo para detener:
+
+1. **PostgreSQL + pgAdmin**
+2. **Pentaho WebSpoon**
+3. **Todos los contenedores**
+
+Antes de detener pregunta si se desea eliminar los volumenes de datos (borra toda la informacion persistente).
+
+---
+
+## 📜 Referencia de scripts
 
 ### `run.ps1`
 
-```powershell
-# 1. Crea la red 'red_datos' si no existe
-$networkCheck = docker network ls --filter name=^red_datos$ --format "{{.Name}}"
-if (-not $networkCheck) {
-    Write-Host "[i] Creando red 'red_datos'..." -ForegroundColor Yellow
-    docker network create red_datos
-}
+Levanta todo el entorno:
+1. Crea la red `red_datos` si no existe.
+2. `docker compose up -d` en `postgres/` (PostgreSQL + pgAdmin).
+3. `docker compose up -d` en `pentaho/` (Pentaho Spoon).
 
-# 2. Levanta PostgreSQL + pgAdmin
-Set-Location ".\postgres"
-docker compose -f postgres-compose.yaml up -d
+### `stop.ps1`
 
-# 3. Levanta Pentaho Spoon
-Set-Location "..\pentaho"
-docker compose -f pentaho-compose.yaml up -d
+Menu interactivo para detener contenedores:
 
-Write-Host "[LISTO] Entorno encendido" -ForegroundColor Green
-```
+- Opcion 1: detiene solo PostgreSQL + pgAdmin.
+- Opcion 2: detiene solo Pentaho Spoon.
+- Opcion 3: detiene ambos.
+- Antes de ejecutar `docker compose down`, pregunta si se deben eliminar los volumenes (`-v`).
+
+### `menu.ps1`
+
+Menu principal que agrupa las tres operaciones basicas del entorno:
+
+1. **Iniciar** -> ejecuta `run.ps1`
+2. **Detener** -> ejecuta `stop.ps1`
+3. **Hidratar** -> ejecuta `postgres/db_setup/run_hidratation.ps1`
+4. **Salir**
 
 ---
 

@@ -1,0 +1,188 @@
+﻿# Limpiar la pantalla para iniciar el proceso de forma limpia
+Clear-Host
+
+# Configurar tamano de consola para centrado perfecto
+try {
+    $Host.UI.RawUI.WindowSize = New-Object System.Management.Automation.Host.Size(130, 55)
+    $Host.UI.RawUI.BufferSize = New-Object System.Management.Automation.Host.Size(130, 9999)
+} catch { }
+
+function Center($t, $c = "White") {
+    $w = $Host.UI.RawUI.BufferSize.Width
+    $p = " " * [math]::Max(0, [math]::Floor(($w - $t.Length) / 2))
+    Write-Host "$p$t" -ForegroundColor $c
+}
+
+Center "=======================================================" Cyan
+Center "HIDRATANDO BASE DE DATOS - SEGUROS" Cyan
+Center "=======================================================" Cyan
+
+$container = "postgres_db"
+$pgUser = "postgres"
+$pgDB = "postgres"
+$schema = "SEGURO_G28310422"
+$tmp = "/tmp"
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+Set-Location $scriptDir
+
+# 1. Verificar contenedor Docker
+Write-Host "`n"
+Center "[1/4] Verificando contenedor PostgreSQL..." Gray
+try {
+    $running = docker ps --filter "name=$container" --filter "status=running" --format "{{.Names}}" 2>$null
+    if (-not $running) { throw "Contenedor no detectado" }
+    Center "[+] Contenedor '$container' detectado y corriendo." Green
+} catch {
+    Write-Host "`n"
+    Center "+-----------------------------------------------------+" Red
+    Center "|  [!] ERROR: Contenedor PostgreSQL no encontrado.    |" Red
+    Center "|  Ejecuta primero: docker-compose up -d              |" Red
+    Center "+-----------------------------------------------------+" Red
+    Exit 1
+}
+
+# 2. Verificar archivos SQL
+Write-Host "`n"
+Center "[2/4] Verificando archivos SQL..." Gray
+try {
+    if (-not (Test-Path "create_tables.sql")) { throw "create_tables.sql no encontrado" }
+    if (-not (Test-Path "hidrate.sql")) { throw "hidrate.sql no encontrado" }
+    $ts = [math]::Round((Get-Item "create_tables.sql").Length / 1KB, 1)
+    $hs = [math]::Round((Get-Item "hidrate.sql").Length / 1KB, 1)
+    $hl = (Get-Content "hidrate.sql").Count
+    Center "[+] create_tables.sql ($ts KB - 12 tablas)" Green
+    Center "[+] hidrate.sql ($hs KB - $hl lineas)" Green
+} catch {
+    Write-Host "`n"
+    Center "+-----------------------------------------------------+" Red
+    Center "|  [!] ERROR: $($_.Exception.Message)" Red
+    Center "+-----------------------------------------------------+" Red
+    Exit 1
+}
+
+# 3. Confirmar
+Write-Host "`n"
+Center "[3/4] Confirmacion..." Gray
+$schemaExists = docker exec $container psql -U $pgUser -d $pgDB -t -A -c "SELECT COUNT(*) FROM information_schema.schemata WHERE lower(schema_name) = lower('$schema');" 2>$null
+if ($schemaExists -and [int]$schemaExists -ge 1) {
+    Center "[!] AVISO: El schema 'SEGURO_G28310422' YA EXISTE en la base de datos." Red
+    Center "Se borrara y se creara de nuevo (DROP SCHEMA ... CASCADE)." Red
+}
+$prompt = "Desea continuar con la creacion de tablas e hidratacion? (y/N)"
+$pw = $Host.UI.RawUI.BufferSize.Width
+$pp = " " * [math]::Max(0, [math]::Floor(($pw - $prompt.Length) / 2))
+Write-Host ""
+$resp = Read-Host "$pp$prompt"
+if ($resp -ne "y" -and $resp -ne "Y") {
+    Center "Cancelado por el usuario." Yellow
+    Exit 0
+}
+
+# 4. Ejecutar scripts
+Write-Host "`n"
+Center "[4/4] Ejecutando scripts de hidratacion..." Gray
+
+function Run-Script($file, $label) {
+    Write-Host "`n"
+    Center "Ejecutando $label ..." DarkGray
+    try {
+        $start = Get-Date
+        docker cp "$file" "${container}:${tmp}/${file}" 2>&1 | Out-Null
+        if ($LASTEXITCODE -ne 0) { throw "No se pudo copiar $file" }
+
+        $output = docker exec $container psql -U $pgUser -d $pgDB -f "${tmp}/${file}" -q 2>$null
+        if ($LASTEXITCODE -ne 0) { throw $output }
+
+        docker exec $container rm -f "${tmp}/${file}" 2>$null | Out-Null
+        $elapsed = (Get-Date) - $start
+        $secs = [math]::Round($elapsed.TotalSeconds, 2)
+        Center "[+] $label completado [${secs}s]" Green
+    } catch {
+        Write-Host "`n"
+        Center "+-----------------------------------------------------+" Red
+        Center "|  [!] ERROR FATAL: Fallo $label                      |" Red
+        Center "|  No se creo NADA - Schema eliminado                |" Red
+        Center "|  Corrige el error y vuelve a ejecutar              |" Red
+        Center "+-----------------------------------------------------+" Red
+
+        Write-Host "`n"
+        Center "Limpiando esquema $schema..." DarkGray
+        docker exec $container psql -U $pgUser -d $pgDB -c "DROP SCHEMA IF EXISTS $schema CASCADE;" -q 2>$null | Out-Null
+        Center "[+] Esquema eliminado - No quedo nada" Yellow
+        Exit 1
+    }
+}
+
+Run-Script "create_tables.sql" "Creacion de tablas"
+Run-Script "hidrate.sql" "Insercion de datos"
+
+# Mostrar conteos finales
+Write-Host "`n"
+Center "=======================================================" Green
+Center "[+] HIDRATACION COMPLETADA CON EXITO" Green
+Center "=======================================================" Green
+
+$tables = @("PAIS","CIUDAD","SUCURSAL","TIPO_PRODUCTO","PRODUCTO","EVALUACION_SERVICIO","CLIENTE","CONTRATO","REGISTRO_CONTRATO","RECOMIENDA","SINIESTRO","REGISTRO_SINIESTRO")
+$totalRows = 0
+$maxNameLen = ($tables | ForEach-Object { $_.Length }) | Sort-Object -Descending | Select-Object -First 1
+
+foreach ($t in $tables) {
+    $result = docker exec $container psql -U $pgUser -d $pgDB -t -A -c "SELECT COUNT(*) FROM $schema.$t;" 2>$null
+    $c = [int]$result
+    $totalRows += $c
+    Center "$($t.PadRight($maxNameLen)) : $c" White
+}
+
+Center "-------------------------------------------------------" Green
+Center "TOTAL REGISTROS : $totalRows" Yellow
+Center "=======================================================" Green
+
+Write-Host "`n"
+Center "Datos DB:" White
+Center "Servidor: localhost:5432" Cyan
+Center "Base: postgres | Usuario: postgres | Clave: postgres" Cyan
+Center "Schema: $schema" Cyan
+Write-Host "`n"
+# == PEGA TU ASCII ART AQUI (reemplazar la linea de abajo) ==
+$art = "`n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠁⠀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⣿⣿⡿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣽⣶⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⡿⠋⢁⠀⢂⣚⠙⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⡿⠁⠠⢢⣐⡆⢸⣷⡈⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣏⣿⡿⡿⣡⠞⣴⣾⣿⣿⣧⠻⠁⠈⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢼⣿⣎⣿⢏⣿⣳⣿⡿⣋⣹⠏⠀⠔⠈⣶⣿⣿⢿⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣟⣃⣀⣀⣀⣤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⣿⣾⣧⣿⣷⣟⣡⣴⣿⡿⠖⠚⠂⠳⠙⢻⣳⣿⡇⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⣿⡙⣿⡿⠛⠿⣿⢿⣃⡠⠄⠉⣷⠀⢸⠘⣿⣆⡅⣾⣿⣿⣿⣿⣿⣿⣿⣿⣯⣽⠖⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⣿⣿⣷⡄⣐⣤⣚⣿⢳⠀⠄⣹⠀⣼⢾⣿⣛⣵⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠁⠀⠀⠀⢀⣀⣀⡤⠶⢒⣒⣡⣤⣤⣄⡀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣿⣿⣻⣞⣡⠴⠋⠁⠈⠆⢀⢸⡀⣏⡟⡍⣿⣿⣿⣿⣿⠿⠿⠿⠛⠁⠀⠀⣠⠤⣶⠯⢛⣭⣴⣶⣿⣿⣿⣿⣿⣿⣿⡆
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢿⣿⣯⡻⣟⠿⠟⢀⠊⢀⠘⣾⣿⠑⣌⢿⠿⠿⠿⠶⠄⠀⠀⣀⢤⢖⣩⠶⣋⣵⣿⣿⣿⣿⣿⣿⣿⣿⣟⣿⣿⣿⡇
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⢿⣷⣿⠀⠀⡀⠈⢰⣾⣿⣏⡀⢿⠸⣶⡀⠀⠀⣀⣰⢾⢱⣿⠎⣁⣾⣿⣿⣿⣿⣿⣿⣷⣿⡿⣿⣿⣿⢿⡿⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⢿⣧⣴⣶⣿⡿⣿⢏⣾⡇⢘⣼⣷⣫⣶⣫⣟⣥⡾⢛⣥⣾⣿⣿⣿⣿⣿⣽⣿⣻⣿⣿⣿⣿⣿⣻⡿⢡⠁
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⣿⣟⣯⣼⣛⣿⠿⢷⣾⣿⠟⣡⢞⣼⣿⢋⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣟⣿⣿⣷⡿⣿⣿⣡⠇⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣴⣶⣿⣿⣿⣷⣿⠟⣉⣤⣶⡿⠟⢁⣾⣿⣿⠟⣱⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣾⣿⣿⣾⣿⢛⡴⠋⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⢀⣀⣤⣤⣴⣒⣶⣶⣶⢞⣿⣾⡟⣋⣡⣿⣿⡿⠿⢛⣛⣉⣥⣴⣦⣻⢿⣿⢋⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢾⣿⡟⣡⠟⠁⠀⠀⠀
+⠀⠀⠀⣀⣤⣶⣿⠿⣲⠿⣅⡽⢋⢭⣾⢭⣾⣿⡿⠿⠛⢉⣡⣤⡴⡞⣏⣻⠭⠏⠐⠒⠫⢟⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣯⡿⣋⡴⠋⠀⠀⠀⠀⠀
+⣀⡤⠾⠯⠽⣽⣬⣽⣋⣱⡞⣘⣼⣿⣷⣈⣭⡵⠒⠖⠛⠻⠭⣕⣋⠉⠁⠀⠀⠀⠀⠀⣠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⣋⡴⠋⠀⠀⠀⠀⠀⠀⠀
+⠳⣏⡿⣿⣿⣶⣶⣦⣭⣽⣓⣻⣷⡧⠟⠫⠎⣼⠀⠀⠀⠀⠀⠀⠈⠉⠓⠒⠤⣀⢠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢿⣋⡶⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠙⠺⢽⣿⢿⣿⣿⡿⠟⠉⠀⠀⠀⢀⣶⣟⣆⣀⣀⣀⣀⣀⠀⠀⠀⠀⢀⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⢟⡭⠞⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⣠⣾⠟⠋⠁⠀⠀⠀⠀⠀⢀⣸⡟⣿⣮⣧⣭⣶⣭⣍⣙⣫⣓⣦⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⣠⣴⡟⠀⠀⠀⠀⠀⢀⣠⡴⢞⢫⠔⣿⣶⣝⣿⡿⠻⠛⣫⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⢀⣼⣿⣿⡇⠀⠀⣀⣤⠞⡭⣑⡚⢬⢃⣮⣿⣿⢟⢫⡙⣤⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀`n"
+$artLines = $art -split "`n" | ForEach-Object { $_.Trim("`r") } | Where-Object { $_.Length -gt 0 }
+$maxArtWidth = ($artLines | ForEach-Object { $_.Length }) | Sort-Object -Descending | Select-Object -First 1
+$termWidth = $Host.UI.RawUI.BufferSize.Width
+$pad = " " * [math]::Max(0, [math]::Floor(($termWidth - $maxArtWidth) / 2))
+foreach ($line in $artLines) { Write-Host "$pad$line" -ForegroundColor Magenta }
+
+$msg1 = "Preparate para un nivel de poder de"
+$msg2 = "$totalRows"
+$msg3 = "ARCHIVOS"
+$p1 = " " * [math]::Max(0, [math]::Floor(($termWidth - $msg1.Length) / 2))
+$p2 = " " * [math]::Max(0, [math]::Floor(($termWidth - $msg2.Length) / 2))
+$p3 = " " * [math]::Max(0, [math]::Floor(($termWidth - $msg3.Length) / 2))
+Write-Host "`n"
+Write-Host "$p1$msg1" -ForegroundColor Yellow
+Write-Host "$p2$msg2" -ForegroundColor Cyan
+Write-Host "$p3$msg3" -ForegroundColor Yellow
+Write-Host ""
+Center "Presione cualquier tecla para salir..." Gray
+$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
