@@ -130,11 +130,11 @@ foreach ($t in $tables) {
     $result = docker exec $container psql -U $pgUser -d $pgDB -t -A -c "SELECT COUNT(*) FROM $schema.$t;" 2>$null
     $c = [int]$result
     $totalRows += $c
-    Center "$($t.PadRight($maxNameLen)) : $c" White
+    Center ("{0,-$($maxNameLen+2)}: {1,5}" -f $t, $c) White
 }
 
 Center "-------------------------------------------------------" Green
-Center "TOTAL REGISTROS : $totalRows" Yellow
+Center ("{0,-$($maxNameLen+2)}: {1,5}" -f "TOTAL REGISTROS", $totalRows) Yellow
 Center "=======================================================" Green
 
 Write-Host "`n"
@@ -184,5 +184,5 @@ Write-Host "$p1$msg1" -ForegroundColor Yellow
 Write-Host "$p2$msg2" -ForegroundColor Cyan
 Write-Host "$p3$msg3" -ForegroundColor Yellow
 Write-Host ""
-Center "Presione cualquier tecla para salir..." Gray
-$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+Center "Presiona ENTER para salir..." Gray
+$null = Read-Host

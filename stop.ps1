@@ -1,26 +1,48 @@
 ﻿Clear-Host
 
-Write-Host "=======================================================" -ForegroundColor Cyan
-Write-Host "        STOP - DETENER ENTORNO                         " -ForegroundColor Cyan
-Write-Host "=======================================================" -ForegroundColor Cyan
+try {
+    $Host.UI.RawUI.WindowSize = New-Object System.Management.Automation.Host.Size(130, 55)
+    $Host.UI.RawUI.BufferSize = New-Object System.Management.Automation.Host.Size(130, 9999)
+} catch { }
+
+function Center($t, $c = "White") {
+    $w = $Host.UI.RawUI.BufferSize.Width
+    $p = " " * [math]::Max(0, [math]::Floor(($w - $t.Length) / 2))
+    Write-Host "$p$t" -ForegroundColor $c
+}
 
 function Show-Menu {
-    Write-Host "`n+-----------------------------------------+" -ForegroundColor Cyan
-    Write-Host "|        SELECCIONA QUE DETENER            |" -ForegroundColor Cyan
-    Write-Host "+-----------------------------------------+" -ForegroundColor Cyan
-    Write-Host "|  1) PostgreSQL + pgAdmin                 |" -ForegroundColor White
-    Write-Host "|  2) Pentaho WebSpoon                     |" -ForegroundColor White
-    Write-Host "|  3) Todos los contenedores               |" -ForegroundColor White
-    Write-Host "|  4) Salir                                |" -ForegroundColor White
-    Write-Host "+-----------------------------------------+" -ForegroundColor Cyan
+    Clear-Host
+    Center "=======================================================" Cyan
+    Center "STOP - DETENER ENTORNO" Yellow
+    Center "=======================================================" Cyan
+
+    $opts = @(
+        "[1]  PostgreSQL + pgAdmin",
+        "[2]  Pentaho WebSpoon",
+        "[3]  Todos los contenedores",
+        "[4]  Salir"
+    )
+    $maxLen = ($opts | ForEach-Object { $_.Length }) | Sort-Object -Descending | Select-Object -First 1
+    Center ""
+    foreach ($opt in $opts) {
+        Center $opt.PadRight($maxLen) White
+    }
+    Center ""
+    Center "=======================================================" Green
 }
 
 function Ask-Volumes {
-    Write-Host "`n+-----------------------------------------+" -ForegroundColor Yellow
-    Write-Host "|  Eliminar tambien los volumenes de datos? |" -ForegroundColor Yellow
-    Write-Host "|  (Borrara toda la informacion persistente)|" -ForegroundColor Yellow
-    Write-Host "+-----------------------------------------+" -ForegroundColor Yellow
-    $response = Read-Host "`nEscribe S (Si) o N (No)"
+    Center ""
+    Center "=======================================================" Red
+    Center "[!]  AVISO" Red
+    Center "Eliminar tambien los volumenes de datos?" Red
+    Center "(Borrara toda la informacion persistente)" Red
+    Center "=======================================================" Red
+    $prompt = "(s/n)"
+    $pw = $Host.UI.RawUI.BufferSize.Width
+    $pp = " " * [math]::Max(0, [math]::Floor(($pw - $prompt.Length) / 2))
+    $response = Read-Host "$pp$prompt"
     return ($response -eq 'S' -or $response -eq 's')
 }
 
@@ -30,7 +52,7 @@ function Stop-Containers {
         [string]$DisplayName
     )
 
-    Write-Host "`n[..] Deteniendo $DisplayName..." -ForegroundColor Gray
+    Center "[..]  Deteniendo $DisplayName..." Gray
     try {
         $composePath = Join-Path -Path $PSScriptRoot -ChildPath $ComposeFile
         $projectDir = Split-Path -Path $composePath -Parent
@@ -44,9 +66,9 @@ function Stop-Containers {
             docker compose -f $composeFileName down
         }
         if ($LASTEXITCODE -ne 0) { throw }
-        Write-Host "      [+] $DisplayName detenido correctamente." -ForegroundColor Green
+        Center "[+]  $DisplayName detenido correctamente." Green
     } catch {
-        Write-Host "      [!] ERROR al detener $DisplayName." -ForegroundColor Red
+        Center "[!]  ERROR al detener $DisplayName." Red
     } finally {
         Pop-Location
     }
@@ -54,7 +76,10 @@ function Stop-Containers {
 
 do {
     Show-Menu
-    $choice = Read-Host "`nOpcion"
+    $prompt = "Opcion"
+    $pw = $Host.UI.RawUI.BufferSize.Width
+    $pp = " " * [math]::Max(0, [math]::Floor(($pw - $prompt.Length) / 2))
+    $choice = Read-Host "`n$pp$prompt"
 
     switch ($choice) {
         '1' {
@@ -68,16 +93,18 @@ do {
             Stop-Containers -ComposeFile "pentaho\pentaho-compose.yaml" -DisplayName "Pentaho WebSpoon"
         }
         '4' {
-            Write-Host "`nSaliendo..." -ForegroundColor Gray
+            Center "`nSaliendo..." Yellow
         }
         default {
-            Write-Host "`nOpcion invalida. Intenta de nuevo." -ForegroundColor Red
+            Center ""
+            Center "=======================================================" Red
+            Center "[!]  Opcion invalida. Intenta de nuevo." Red
+            Center "=======================================================" Red
         }
     }
 
     if ($choice -ne '4') {
-        Write-Host "`nPresiona ENTER para continuar..."
+        Center "Presiona ENTER para continuar..." Gray
         $null = Read-Host
-        Clear-Host
     }
 } while ($choice -ne '4')
