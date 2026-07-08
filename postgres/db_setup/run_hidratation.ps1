@@ -21,6 +21,7 @@ $container = "postgres_db"
 $pgUser = "postgres"
 $pgDB = "postgres"
 $schema = "SEGURO_G28310422"
+$schemaDW = "SEGURO_DW_G28310422"
 $tmp = "/tmp"
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $scriptDir
@@ -65,7 +66,13 @@ Write-Host "`n"
 Center "[3/4] Confirmacion..." Gray
 $schemaExists = docker exec $container psql -U $pgUser -d $pgDB -t -A -c "SELECT COUNT(*) FROM information_schema.schemata WHERE lower(schema_name) = lower('$schema');" 2>$null
 if ($schemaExists -and [int]$schemaExists -ge 1) {
-    Center "[!] AVISO: El schema 'SEGURO_G28310422' YA EXISTE en la base de datos." Red
+    Center "[!] AVISO: El schema '$schema' (Relacional) YA EXISTE en la base de datos." Red
+    Center "Se borrara y se creara de nuevo (DROP SCHEMA ... CASCADE)." Red
+}
+
+$schemaDWExists = docker exec $container psql -U $pgUser -d $pgDB -t -A -c "SELECT COUNT(*) FROM information_schema.schemata WHERE lower(schema_name) = lower('$schemaDW');" 2>$null
+if ($schemaDWExists -and [int]$schemaDWExists -ge 1) {
+    Center "[!] AVISO: El schema '$schemaDW' (Data Warehouse) YA EXISTE en la base de datos." Red
     Center "Se borrara y se creara de nuevo (DROP SCHEMA ... CASCADE)." Red
 }
 $prompt = "Desea continuar con la creacion de tablas e hidratacion? (y/N)"
@@ -107,8 +114,8 @@ function Run-Script($file, $label) {
 
         Write-Host "`n"
         Center "Limpiando esquema $schema..." DarkGray
-        docker exec $container psql -U $pgUser -d $pgDB -c "DROP SCHEMA IF EXISTS $schema CASCADE;" -q 2>$null | Out-Null
-        Center "[+] Esquema eliminado - No quedo nada" Yellow
+        docker exec $container psql -U $pgUser -d $pgDB -c "DROP SCHEMA IF EXISTS $schema CASCADE; DROP SCHEMA IF EXISTS $schemaDW CASCADE;" -q 2>$null | Out-Null
+        Center "[+] Esquemas eliminados - No quedo nada (Relacional + DW)" Yellow
         Exit 1
     }
 }
@@ -138,12 +145,26 @@ Center ("{0,-$($maxNameLen+2)}: {1,5}" -f "TOTAL REGISTROS", $totalRows) Yellow
 Center "=======================================================" Green
 
 Write-Host "`n"
+Center "--- DATA WAREHOUSE (estructura creada, sin datos) ---" Yellow
+$dimensiones = @("DIM_TIEMPO","DIM_CLIENTE","DIM_PRODUCTO","DIM_CONTRATO","DIM_SUCURSAL","DIM_ESTADO_CONTRATO","DIM_EVALUACION_SERVICIO","DIM_SINIESTRO")
+$factTables = @("FACT_REGISTRO_CONTRATO","FACT_REGISTRO_SINIESTRO","FACT_EVALUACION_SERVICIO","FACT_METAS")
+$dwMaxLen = (($dimensiones + $factTables) | ForEach-Object { $_.Length }) | Sort-Object -Descending | Select-Object -First 1
+Center "Dimensiones:" Cyan
+foreach ($d in $dimensiones) {
+    Center ("  {0,-$($dwMaxLen+2)}: (vacia)" -f $d) Gray
+}
+Center "Fact Tables:" Cyan
+foreach ($f in $factTables) {
+    Center ("  {0,-$($dwMaxLen+2)}: (vacia)" -f $f) Gray
+}
+
+Write-Host "`n"
 Center "Datos DB:" White
 Center "Servidor: localhost:5432" Cyan
 Center "Base: postgres | Usuario: postgres | Clave: postgres" Cyan
 Center "Schema: $schema" Cyan
+Center "Schema DW: $schemaDW" Cyan
 Write-Host "`n"
-# == PEGA TU ASCII ART AQUI (reemplazar la linea de abajo) ==
 $art = "`n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠁⠀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⣿⣿⡿⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣽⣶⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⡿⠋⢁⠀⢂⣚⠙⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -184,5 +205,3 @@ Write-Host "$p1$msg1" -ForegroundColor Yellow
 Write-Host "$p2$msg2" -ForegroundColor Cyan
 Write-Host "$p3$msg3" -ForegroundColor Yellow
 Write-Host ""
-Center "Presiona ENTER para salir..." Gray
-$null = Read-Host
