@@ -6,3 +6,6 @@ pentaho/mis_procesos/*.backup
 
 # Original instructions (not needed in the repo)
 explain.txt
+
+# AI agent instructions (local config — not for repo)
+AGENTS.md
