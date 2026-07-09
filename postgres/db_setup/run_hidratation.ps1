@@ -97,7 +97,7 @@ function Run-Script($file, $label) {
         docker cp "$file" "${container}:${tmp}/${file}" 2>&1 | Out-Null
         if ($LASTEXITCODE -ne 0) { throw "No se pudo copiar $file" }
 
-        $output = docker exec $container psql -U $pgUser -d $pgDB -f "${tmp}/${file}" -q 2>$null
+        $output = docker exec $container psql -U $pgUser -d $pgDB -f "${tmp}/${file}" -v ON_ERROR_STOP=1 2>&1
         if ($LASTEXITCODE -ne 0) { throw $output }
 
         docker exec $container rm -f "${tmp}/${file}" 2>$null | Out-Null
@@ -129,14 +129,33 @@ Center "=======================================================" Green
 Center "[+] HIDRATACION COMPLETADA CON EXITO" Green
 Center "=======================================================" Green
 
-$tables = @("PAIS","CIUDAD","SUCURSAL","TIPO_PRODUCTO","PRODUCTO","EVALUACION_SERVICIO","CLIENTE","CONTRATO","REGISTRO_CONTRATO","RECOMIENDA","SINIESTRO","REGISTRO_SINIESTRO")
+# Descubrir tablas relacionales dinamicamente
+$tableQuery = "SELECT table_name FROM information_schema.tables WHERE lower(table_schema) = lower('$schema') AND table_type = 'BASE TABLE' ORDER BY table_name"
+$tableResult = docker exec $container psql -U $pgUser -d $pgDB -t -A -c "$tableQuery" 2>$null
+$tables = $tableResult -split "`n" | Where-Object { $_.Trim() -ne "" }
+
+if (-not $tables) {
+    Center "[!] ERROR: No se encontraron tablas en el schema $schema" Red
+    Exit 1
+}
+
+# Descubrir tablas DW dinamicamente
+$dwQuery = "SELECT table_name FROM information_schema.tables WHERE lower(table_schema) = lower('$schemaDW') AND table_type = 'BASE TABLE' ORDER BY table_name"
+$dwResult = docker exec $container psql -U $pgUser -d $pgDB -t -A -c "$dwQuery" 2>$null
+$allDwTables = $dwResult -split "`n" | Where-Object { $_.Trim() -ne "" }
+$dimensiones = $allDwTables | Where-Object { $_ -like 'DIM_*' }
+$factTables = $allDwTables | Where-Object { $_ -like 'FACT_*' }
+
+# --- Mostrar conteos relacionales + verificar que no esten vacias ---
 $totalRows = 0
 $maxNameLen = ($tables | ForEach-Object { $_.Length }) | Sort-Object -Descending | Select-Object -First 1
+$emptyTables = @()
 
 foreach ($t in $tables) {
     $result = docker exec $container psql -U $pgUser -d $pgDB -t -A -c "SELECT COUNT(*) FROM $schema.$t;" 2>$null
     $c = [int]$result
     $totalRows += $c
+    if ($c -eq 0) { $emptyTables += $t }
     Center ("{0,-$($maxNameLen+2)}: {1,5}" -f $t, $c) White
 }
 
@@ -144,18 +163,34 @@ Center "-------------------------------------------------------" Green
 Center ("{0,-$($maxNameLen+2)}: {1,5}" -f "TOTAL REGISTROS", $totalRows) Yellow
 Center "=======================================================" Green
 
+if ($emptyTables) {
+    Write-Host "`n"
+    Center "+-----------------------------------------------------+" Red
+    Center "|  [!] ERROR: Las siguientes tablas quedaron VACIAS:  |" Red
+    foreach ($et in $emptyTables) {
+        Center "|       - $et" Red
+    }
+    Center "|  Revise el script hidrate.sql para posibles errores |" Red
+    Center "+-----------------------------------------------------+" Red
+    Exit 1
+}
+
+# --- Mostrar estructura DW ---
 Write-Host "`n"
 Center "--- DATA WAREHOUSE (estructura creada, sin datos) ---" Yellow
-$dimensiones = @("DIM_TIEMPO","DIM_CLIENTE","DIM_PRODUCTO","DIM_CONTRATO","DIM_SUCURSAL","DIM_ESTADO_CONTRATO","DIM_EVALUACION_SERVICIO","DIM_SINIESTRO")
-$factTables = @("FACT_REGISTRO_CONTRATO","FACT_REGISTRO_SINIESTRO","FACT_EVALUACION_SERVICIO","FACT_METAS")
-$dwMaxLen = (($dimensiones + $factTables) | ForEach-Object { $_.Length }) | Sort-Object -Descending | Select-Object -First 1
-Center "Dimensiones:" Cyan
-foreach ($d in $dimensiones) {
-    Center ("  {0,-$($dwMaxLen+2)}: (vacia)" -f $d) Gray
-}
-Center "Fact Tables:" Cyan
-foreach ($f in $factTables) {
-    Center ("  {0,-$($dwMaxLen+2)}: (vacia)" -f $f) Gray
+
+if ($dimensiones -or $factTables) {
+    $dwMaxLen = (($dimensiones + $factTables) | ForEach-Object { $_.Length }) | Sort-Object -Descending | Select-Object -First 1
+    Center "Dimensiones:" Cyan
+    foreach ($d in $dimensiones) {
+        Center ("  {0,-$($dwMaxLen+2)}: (vacia)" -f $d) Gray
+    }
+    Center "Fact Tables:" Cyan
+    foreach ($f in $factTables) {
+        Center ("  {0,-$($dwMaxLen+2)}: (vacia)" -f $f) Gray
+    }
+} else {
+    Center "[!] No se encontraron tablas en el schema $schemaDW" Yellow
 }
 
 Write-Host "`n"

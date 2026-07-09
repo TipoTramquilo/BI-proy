@@ -1,8 +1,8 @@
 # Postgres data persistence (auto-created)
 postgres/data/
 
-# Pentaho ETL workspace (auto-created)
-pentaho/mis_procesos/
+# Pentaho ETL workspace — rules in pentaho/mis_procesos/.gitignore
+pentaho/mis_procesos/*.backup
 
 # Original instructions (not needed in the repo)
 explain.txt

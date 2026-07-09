@@ -1,0 +1,5 @@
+data/
+db.cache*
+.spoonrc
+xulSettings.properties
+shared.xml.backup

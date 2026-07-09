@@ -17,7 +17,7 @@ CREATE TABLE PAIS (
 CREATE TABLE CIUDAD (
     cod_ciudad INT PRIMARY KEY,
     nb_ciudad VARCHAR(100) NOT NULL,
-    cod_pais INT,
+    cod_pais INT NOT NULL,
     CONSTRAINT FK_CIUDAD_PAIS FOREIGN KEY (cod_pais) REFERENCES PAIS(cod_pais)
 );
 
@@ -25,7 +25,7 @@ CREATE TABLE CIUDAD (
 CREATE TABLE SUCURSAL (
     cod_sucursal INT PRIMARY KEY,
     nb_sucursal VARCHAR(100) NOT NULL,
-    cod_ciudad INT,
+    cod_ciudad INT NOT NULL,
     CONSTRAINT FK_SUCURSAL_CIUDAD FOREIGN KEY (cod_ciudad) REFERENCES CIUDAD(cod_ciudad)
 );
 
@@ -40,22 +40,22 @@ CREATE TABLE TIPO_PRODUCTO (
 CREATE TABLE PRODUCTO (
     cod_producto INT PRIMARY KEY,
     nb_producto VARCHAR(100) NOT NULL,
-    descripcion TEXT,
-    cod_tipo_producto INT,
+    cod_tipo_producto INT NOT NULL,
     calificacion VARCHAR(50),
+    descripcion TEXT,
     CONSTRAINT FK_PRODUCTO_TIPO FOREIGN KEY (cod_tipo_producto) REFERENCES TIPO_PRODUCTO(cod_tipo_producto)
 );
 
 -- 6. Crear tabla CLIENTE
 CREATE TABLE CLIENTE (
     cod_cliente INT PRIMARY KEY,
+    cod_sucursal INT NOT NULL,
     nb_cliente VARCHAR(150) NOT NULL,
     ci_rif VARCHAR(20) NOT NULL,
     telefono VARCHAR(20),
     direccion TEXT,
     sexo CHAR(1),
     email VARCHAR(100),
-    cod_sucursal INT,
     CONSTRAINT FK_CLIENTE_SUCURSAL FOREIGN KEY (cod_sucursal) REFERENCES SUCURSAL(cod_sucursal),
     CONSTRAINT CHK_CLIENTE_SEXO CHECK (sexo IN ('M', 'F'))
 );
@@ -153,7 +153,7 @@ create table DIM_TIEMPO (
 
 -- dimensión cliente
 create table DIM_CLIENTE (
-    sk_dim_cliente int primary key,
+    sk_dim_cliente serial primary key,
     cod_cliente int not null, -- nk numérico sincronizado con el origen transaccional
     nb_cliente varchar(150) not null,
     ci_rif varchar(45) not null,
@@ -166,7 +166,7 @@ create table DIM_CLIENTE (
 
 -- dimensión producto
 create table DIM_PRODUCTO (
-    sk_dim_producto int primary key,
+    sk_dim_producto serial primary key,
     cod_producto int not null, -- nk numérico
     nb_producto varchar(100) not null,
     descrip_producto varchar(255),
@@ -177,14 +177,14 @@ create table DIM_PRODUCTO (
 
 -- dimensión contrato
 create table DIM_CONTRATO (
-    sk_dim_contrato int primary key,
+    sk_dim_contrato serial primary key,
     nro_contrato int not null, -- nk numérico
     descrip_contrato varchar(255)
 );
 
 -- dimensión sucursal
 create table DIM_SUCURSAL (
-    sk_dim_sucursal int primary key,
+    sk_dim_sucursal serial primary key,
     cod_sucursal int not null, -- nk numérico
     nb_sucursal varchar(100) not null,
     cod_ciudad int,
@@ -195,21 +195,21 @@ create table DIM_SUCURSAL (
 
 -- dimensión estado contrato
 create table DIM_ESTADO_CONTRATO (
-    sk_dim_estado_contrato int primary key,
+    sk_dim_estado_contrato serial primary key,
     cod_estado varchar(20) not null,
     descrip_estado varchar(50)
 );
 
 -- dimensión evaluacion servicio
 create table DIM_EVALUACION_SERVICIO (
-    sk_dim_evaluacion_servicio int primary key,
+    sk_dim_evaluacion_servicio serial primary key,
     cod_evaluacion int not null, -- nk numérico
     nb_descrip varchar(50) not null
 );
 
 -- dimensión siniestro
 create table DIM_SINIESTRO (
-    sk_dim_siniestro int primary key,
+    sk_dim_siniestro serial primary key,
     nro_siniestro int not null, -- nk numérico
     descrip_siniestro varchar(255)
 );
