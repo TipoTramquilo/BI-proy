@@ -218,7 +218,8 @@ create table DIM_ESTADO_CONTRATO (
 create table DIM_EVALUACION_SERVICIO (
     sk_dim_evaluacion_servicio serial primary key,
     cod_evaluacion int not null, -- nk numérico
-    nb_descrip varchar(50) not null
+    nb_descrip varchar(50) not null,
+    CONSTRAINT chk_descrip_estado CHECK (descrip_estado IN ('Malo', 'Regular', 'Bueno', 'Muy Bueno', 'Excelente'))
 );
 
 -- dimensión siniestro
