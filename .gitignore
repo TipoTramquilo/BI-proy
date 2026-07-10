@@ -10,10 +10,10 @@ explain.txt
 # AI agent instructions (local config — not for repo)
 AGENTS.md
 
-pentaho/mis_procesos/.kettle/data/BIProyecto-main/
+pentaho/mis_procesos/data/BIProyecto-main/
 
 # Ignorar la caché y configuraciones que están dentro de .kettle
-pentaho/mis_procesos/.kettle/db.cache*
-pentaho/mis_procesos/.kettle/.spoonrc
-pentaho/mis_procesos/.kettle/xulSettings.properties
-pentaho/mis_procesos/.kettle/shared.xml.backup
+pentaho/mis_procesos/db.cache*
+pentaho/mis_procesos/.spoonrc
+pentaho/mis_procesos/xulSettings.properties
+pentaho/mis_procesos/shared.xml.backup
