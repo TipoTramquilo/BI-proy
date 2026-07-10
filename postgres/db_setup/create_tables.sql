@@ -41,7 +41,7 @@ CREATE TABLE PRODUCTO (
     cod_producto INT PRIMARY KEY,
     nb_producto VARCHAR(100) NOT NULL,
     cod_tipo_producto INT NOT NULL,
-    calificacion VARCHAR(50),
+    calificacion INT NOT NULL,
     descripcion TEXT,
     CONSTRAINT FK_PRODUCTO_TIPO FOREIGN KEY (cod_tipo_producto) REFERENCES TIPO_PRODUCTO(cod_tipo_producto)
 );
@@ -140,15 +140,27 @@ set search_path to seguro_dw_g28310422;
 -- ============================================================================
 
 -- dimensión tiempo
-create table DIM_TIEMPO (
-    sk_dim_tiempo int primary key,
-    cod_annio int not null,
-    cod_mes int not null,
-    cod_dia int not null,
-    desc_mes varchar(20) not null,
-    desc_trimestre varchar(10) not null,
-    desc_semestre varchar(10) not null,
-    fecha_completa date not null -- obligatorio según requerimiento del negocio
+CREATE TABLE DIM_TIEMPO (
+    sk_dim_tiempo INT PRIMARY KEY,
+    cod_annio INT NOT NULL,
+    cod_mes INT NOT NULL,
+    cod_dia INT NOT NULL,
+    desc_mes VARCHAR(20) NOT NULL,
+    desc_trimestre VARCHAR(10) NOT NULL,
+    desc_semestre VARCHAR(10) NOT NULL,
+    fecha_completa DATE NOT NULL, -- Obligatorio según requerimiento del negocio
+
+    -- Restricción para que el mes vaya del 1 al 12
+    CONSTRAINT chk_cod_mes CHECK (cod_mes BETWEEN 1 AND 12),
+
+    -- Restricción para que el día vaya del 1 al 7 (representando los días de la semana)
+    CONSTRAINT chk_cod_dia CHECK (cod_dia BETWEEN 1 AND 7),
+
+    -- Restricción para los valores permitidos en el trimestre
+    CONSTRAINT chk_desc_trimestre CHECK (desc_trimestre IN ('Q1', 'Q2', 'Q3', 'Q4')),
+
+    -- Restricción para los valores permitidos en el semestre
+    CONSTRAINT chk_desc_semestre CHECK (desc_semestre IN ('S1', 'S2'))
 );
 
 -- dimensión cliente
@@ -196,7 +208,7 @@ create table DIM_SUCURSAL (
 -- dimensión estado contrato
 create table DIM_ESTADO_CONTRATO (
     sk_dim_estado_contrato serial primary key,
-    cod_estado varchar(20) not null,
+    cod_estado varchar(2) not null,
     descrip_estado varchar(50)
 );
 

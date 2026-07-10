@@ -63,12 +63,12 @@ INSERT INTO TIPO_PRODUCTO (cod_tipo_producto, nb_tipo_producto) VALUES
 -- 5. Inserts para PRODUCTO (Mapeados con su respectivo tipo)
 -- ============================================================================
 INSERT INTO PRODUCTO (cod_producto, nb_producto, descripcion, cod_tipo_producto, calificacion) VALUES 
-(1, 'Automóvil', 'Seguro de cobertura de daños y pérdida total de vehículos.', 3, NULL),
-(2, 'Crédito y Caución', 'Póliza de garantías financieras, cumplimiento y fidelidad.', 4, NULL),
-(3, 'Incendios', 'Protección contra pérdidas materiales por fuego y eventos climáticos.', 3, NULL),
-(4, 'Salud', 'Asistencia médica integral, hospitalización y cirugía.', 2, NULL),
-(5, 'Vida', 'Seguro de vida individual o colectivo con protección familiar.', 2, NULL),
-(6, 'Responsabilidad Civil', 'Cobertura frente a daños ocasionados a terceros.', 1, NULL);
+(1, 'Automóvil', 'Seguro de cobertura de daños y pérdida total de vehículos.', 3, 10),
+(2, 'Crédito y Caución', 'Póliza de garantías financieras, cumplimiento y fidelidad.', 4, 8),
+(3, 'Incendios', 'Protección contra pérdidas materiales por fuego y eventos climáticos.', 3, 7),
+(4, 'Salud', 'Asistencia médica integral, hospitalización y cirugía.', 2, 9),
+(5, 'Vida', 'Seguro de vida individual o colectivo con protección familiar.', 2, 9),
+(6, 'Responsabilidad Civil', 'Cobertura frente a daños ocasionados a terceros.', 1, 10);
 
 -- ============================================================================
 -- 6. Inserts para EVALUACION_SERVICIO (Clasificaciones exactas del CHECK)
