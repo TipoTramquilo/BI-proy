@@ -184,7 +184,8 @@ create table DIM_PRODUCTO (
     descrip_producto varchar(255),
     cod_tipo_producto int,
     nb_tipo_producto varchar(100),
-    calificacion int
+    calificacion int,
+    CONSTRAINT chk_nb_producto CHECK ( nb_producto IN ('Personal', 'Danos', 'Patrimonial', 'Prestacion de Servicios'))
 );
 
 -- dimensión contrato
@@ -209,7 +210,8 @@ create table DIM_SUCURSAL (
 create table DIM_ESTADO_CONTRATO (
     sk_dim_estado_contrato serial primary key,
     cod_estado varchar(2) not null,
-    descrip_estado varchar(50)
+    descrip_estado varchar(50),
+    CONSTRAINT chk_descrip_estado CHECK (descrip_estado IN ('Activo', 'Vencido', 'Suspendido'))
 );
 
 -- dimensión evaluacion servicio
