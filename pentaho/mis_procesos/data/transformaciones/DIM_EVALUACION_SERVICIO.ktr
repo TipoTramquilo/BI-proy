@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>DIM_ESTADO_CONTRATO</name>
+    <name>DIM_EVALUACION_SERVICIO</name>
     <description/>
     <extended_description/>
     <trans_version/>
@@ -428,9 +428,9 @@
     <clusterschemas>
     </clusterschemas>
     <created_user>-</created_user>
-    <created_date>2026/07/09 00:37:59.032</created_date>
+    <created_date>2026/07/10 04:22:54.435</created_date>
     <modified_user>-</modified_user>
-    <modified_date>2026/07/09 00:37:59.032</modified_date>
+    <modified_date>2026/07/10 04:22:54.435</modified_date>
     <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA=</key_for_session_key>
     <is_key_private>N</is_key_private>
   </info>
@@ -489,23 +489,18 @@
   </connection>
   <order>
     <hop>
-      <from>Mapeo estados contrato -> Cod estado</from>
-      <to>Dim Estado Contrato Output</to>
+      <from>Input Evaluacion Servicio</from>
+      <to>Lower N Init Cap</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Input Registro Contrato</from>
-      <to>Lower N Init Cap estados</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Lower N Init Cap estados</from>
-      <to>Mapeo estados contrato -> Cod estado</to>
+      <from>Lower N Init Cap</from>
+      <to>Dim Evaluacion Servicio</to>
       <enabled>Y</enabled>
     </hop>
   </order>
   <step>
-    <name>Dim Estado Contrato Output</name>
+    <name>Dim Evaluacion Servicio</name>
     <type>TableOutput</type>
     <description/>
     <distribute>Y</distribute>
@@ -517,7 +512,7 @@
     </partitioning>
     <connection>BI-database</connection>
     <schema>seguro_dw_g28310422</schema>
-    <table>dim_estado_contrato</table>
+    <table>dim_evaluacion_servicio</table>
     <commit>1000</commit>
     <truncate>N</truncate>
     <ignore_errors>N</ignore_errors>
@@ -534,12 +529,12 @@
     <return_field/>
     <fields>
       <field>
-        <column_name>descrip_estado</column_name>
-        <stream_name>estado_contrato</stream_name>
+        <column_name>cod_evaluacion</column_name>
+        <stream_name>cod_evaluacion_servicio</stream_name>
       </field>
       <field>
-        <column_name>cod_estado</column_name>
-        <stream_name>cod_estado</stream_name>
+        <column_name>nb_descrip</column_name>
+        <stream_name>nb_descripcion</stream_name>
       </field>
     </fields>
     <attributes/>
@@ -551,13 +546,13 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>960</xloc>
-      <yloc>160</yloc>
+      <xloc>600</xloc>
+      <yloc>100</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Input Registro Contrato</name>
+    <name>Input Evaluacion Servicio</name>
     <type>TableInput</type>
     <description/>
     <distribute>Y</distribute>
@@ -568,9 +563,10 @@
       <schema_name/>
     </partitioning>
     <connection>BI-database</connection>
-    <sql>SELECT DISTINCT
-   estado_contrato
-FROM seguro_g28310422.registro_contrato
+    <sql>SELECT
+  cod_evaluacion_servicio
+, nb_descripcion
+FROM seguro_g28310422.evaluacion_servicio
 </sql>
     <limit>0</limit>
     <lookup/>
@@ -580,13 +576,36 @@ FROM seguro_g28310422.registro_contrato
     <cached_row_meta_active>N</cached_row_meta_active>
     <row-meta>
       <value-meta>
+        <type>Integer</type>
+        <storagetype>normal</storagetype>
+        <name>cod_evaluacion_servicio</name>
+        <length>9</length>
+        <precision>0</precision>
+        <origin>Input Evaluacion Servicio</origin>
+        <comments>cod_evaluacion_servicio</comments>
+        <conversion_Mask>####0;-####0</conversion_Mask>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en</date_format_locale>
+        <date_format_timezone>Etc/UTC</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
         <type>String</type>
         <storagetype>normal</storagetype>
-        <name>estado_contrato</name>
-        <length>20</length>
+        <name>nb_descripcion</name>
+        <length>50</length>
         <precision>-1</precision>
-        <origin>Input Registro Contrato</origin>
-        <comments>estado_contrato</comments>
+        <origin>Input Evaluacion Servicio</origin>
+        <comments>nb_descripcion</comments>
         <conversion_Mask/>
         <decimal_symbol>.</decimal_symbol>
         <grouping_symbol>,</grouping_symbol>
@@ -612,55 +631,13 @@ FROM seguro_g28310422.registro_contrato
       </output>
     </remotesteps>
     <GUI>
-      <xloc>224</xloc>
-      <yloc>192</yloc>
+      <xloc>200</xloc>
+      <yloc>100</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Mapeo estados contrato -> Cod estado</name>
-    <type>ValueMapper</type>
-    <description/>
-    <distribute>N</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <field_to_use>estado_contrato</field_to_use>
-    <target_field>cod_estado</target_field>
-    <non_match_default/>
-    <fields>
-      <field>
-        <source_value>Activo</source_value>
-        <target_value>ac</target_value>
-      </field>
-      <field>
-        <source_value>Vencido</source_value>
-        <target_value>ve</target_value>
-      </field>
-      <field>
-        <source_value>Suspendido</source_value>
-        <target_value>su</target_value>
-      </field>
-    </fields>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>640</xloc>
-      <yloc>160</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Lower N Init Cap estados</name>
+    <name>Lower N Init Cap</name>
     <type>StringOperations</type>
     <description/>
     <distribute>Y</distribute>
@@ -672,17 +649,17 @@ FROM seguro_g28310422.registro_contrato
     </partitioning>
     <fields>
       <field>
-        <in_stream_name>estado_contrato</in_stream_name>
+        <in_stream_name>nb_descripcion</in_stream_name>
         <out_stream_name/>
-        <trim_type/>
+        <trim_type>none</trim_type>
         <lower_upper>lower</lower_upper>
-        <padding_type/>
+        <padding_type>none</padding_type>
         <pad_char/>
         <pad_len/>
         <init_cap>Y</init_cap>
-        <mask_xml/>
-        <digits/>
-        <remove_special_characters/>
+        <mask_xml>None</mask_xml>
+        <digits>none</digits>
+        <remove_special_characters>none</remove_special_characters>
       </field>
     </fields>
     <attributes/>
@@ -694,8 +671,8 @@ FROM seguro_g28310422.registro_contrato
       </output>
     </remotesteps>
     <GUI>
-      <xloc>416</xloc>
-      <yloc>176</yloc>
+      <xloc>400</xloc>
+      <yloc>100</yloc>
       <draw>Y</draw>
     </GUI>
   </step>

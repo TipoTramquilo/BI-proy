@@ -185,7 +185,7 @@ create table DIM_PRODUCTO (
     cod_tipo_producto int,
     nb_tipo_producto varchar(100),
     calificacion int,
-    CONSTRAINT chk_nb_producto CHECK ( nb_producto IN ('Personal', 'Danos', 'Patrimonial', 'Prestacion de Servicios'))
+    CONSTRAINT chk_nb_tipo_producto CHECK ( nb_tipo_producto IN ('Personal', 'Danos', 'Patrimonial', 'Prestacion de Servicios'))
 );
 
 -- dimensión contrato
