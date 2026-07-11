@@ -488,11 +488,6 @@
   </connection>
   <order>
     <hop>
-      <from>Input Recomienda</from>
-      <to>sk dim cliente</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
       <from>sk dim cliente</from>
       <to>sk dim evaluacion servicio</to>
       <enabled>Y</enabled>
@@ -503,31 +498,165 @@
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Upsert Fact Evaluacion Servicio Output</from>
-      <to>Error Handling ETL</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>sk dim producto</from>
-      <to>mapear recomienda amigo SI/NO -> 1/0</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
       <from>mapear recomienda amigo SI/NO -> 1/0</from>
       <to>Convertir Recomienda Amigo a Numero</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
+      <from>Input Recomienda</from>
+      <to>Sort Por cliente y producto</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Input Registro Contrato</from>
+      <to>Sorto de cliente y producto cronologico</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Sorto de cliente y producto cronologico</from>
+      <to>Seq_Con (Ordenar Contratos de un mismo cliente cronologicamente)</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Sort Por cliente y producto</from>
+      <to>Seq_Ev (Ordenar por un mismo producto las evaluaciones)</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Seq_Con (Ordenar Contratos de un mismo cliente cronologicamente)</from>
+      <to>Evaluaciones Cronologicas</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Seq_Ev (Ordenar por un mismo producto las evaluaciones)</from>
+      <to>Evaluaciones Cronologicas</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Evaluaciones Cronologicas</from>
+      <to>sk dim cliente</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
       <from>Convertir Recomienda Amigo a Numero</from>
-      <to>Upsert Fact Evaluacion Servicio Output</to>
+      <to>Fact Evaluacion Servicio Output</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Fact Evaluacion Servicio Output</from>
+      <to>Error Handling ETL</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>sk dim producto</from>
+      <to>sk_dim_tiempo (fecha ev)</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>sk_dim_tiempo (fecha ev)</from>
+      <to>mapear recomienda amigo SI/NO -> 1/0</to>
       <enabled>Y</enabled>
     </hop>
   </order>
   <step>
+    <name>Convertir Recomienda Amigo a Numero</name>
+    <type>SelectValues</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <fields>
+      <select_unspecified>N</select_unspecified>
+      <remove>
+        <name>cod_cliente_1</name>
+      </remove>
+      <remove>
+        <name>cod_cliente</name>
+      </remove>
+      <remove>
+        <name>cod_producto</name>
+      </remove>
+      <remove>
+        <name>cod_producto_1</name>
+      </remove>
+      <remove>
+        <name>cod_evaluacion_servicio</name>
+      </remove>
+      <remove>
+        <name>nro_con</name>
+      </remove>
+      <remove>
+        <name>nro_ev</name>
+      </remove>
+      <remove>
+        <name>fecha_fin</name>
+      </remove>
+      <meta>
+        <name>recomienda_amigo</name>
+        <rename>recomienda_amigo</rename>
+        <type>Integer</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>1872</xloc>
+      <yloc>64</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Error Handling ETL</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>1872</xloc>
+      <yloc>304</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
     <name>Input Recomienda</name>
     <type>TableInput</type>
     <description/>
-    <distribute>Y</distribute>
+    <distribute>N</distribute>
     <custom_distribution/>
     <copies>1</copies>
     <partitioning>
@@ -657,6 +786,44 @@ FROM seguro_g28310422.recomienda
     </GUI>
   </step>
   <step>
+    <name>mapear recomienda amigo SI/NO -> 1/0</name>
+    <type>ValueMapper</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <field_to_use>recomienda_amigo</field_to_use>
+    <target_field/>
+    <non_match_default/>
+    <fields>
+      <field>
+        <source_value>SI</source_value>
+        <target_value>1</target_value>
+      </field>
+      <field>
+        <source_value>NO</source_value>
+        <target_value>0</target_value>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>1520</xloc>
+      <yloc>64</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
     <name>sk dim cliente</name>
     <type>DBLookup</type>
     <description/>
@@ -699,8 +866,8 @@ FROM seguro_g28310422.recomienda
       </output>
     </remotesteps>
     <GUI>
-      <xloc>344</xloc>
-      <yloc>160</yloc>
+      <xloc>1328</xloc>
+      <yloc>304</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -747,7 +914,7 @@ FROM seguro_g28310422.recomienda
       </output>
     </remotesteps>
     <GUI>
-      <xloc>544</xloc>
+      <xloc>1328</xloc>
       <yloc>160</yloc>
       <draw>Y</draw>
     </GUI>
@@ -795,14 +962,14 @@ FROM seguro_g28310422.recomienda
       </output>
     </remotesteps>
     <GUI>
-      <xloc>736</xloc>
+      <xloc>1520</xloc>
       <yloc>160</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Upsert Fact Evaluacion Servicio Output</name>
-    <type>InsertUpdate</type>
+    <name>Input Registro Contrato</name>
+    <type>TableInput</type>
     <description/>
     <distribute>Y</distribute>
     <custom_distribution/>
@@ -812,48 +979,397 @@ FROM seguro_g28310422.recomienda
       <schema_name/>
     </partitioning>
     <connection>BI-database</connection>
-    <commit>100</commit>
-    <update_bypassed>N</update_bypassed>
+    <sql>SELECT
+  cod_producto
+, cod_cliente
+, fecha_fin
+FROM seguro_g28310422.registro_contrato
+</sql>
+    <limit>0</limit>
+    <lookup/>
+    <execute_each_row>N</execute_each_row>
+    <variables_active>N</variables_active>
+    <lazy_conversion_active>N</lazy_conversion_active>
+    <cached_row_meta_active>N</cached_row_meta_active>
+    <row-meta>
+      <value-meta>
+        <type>Integer</type>
+        <storagetype>normal</storagetype>
+        <name>cod_producto</name>
+        <length>9</length>
+        <precision>0</precision>
+        <origin>Input Contrato</origin>
+        <comments>cod_producto</comments>
+        <conversion_Mask>####0;-####0</conversion_Mask>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en</date_format_locale>
+        <date_format_timezone>Etc/UTC</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>Integer</type>
+        <storagetype>normal</storagetype>
+        <name>cod_cliente</name>
+        <length>9</length>
+        <precision>0</precision>
+        <origin>Input Contrato</origin>
+        <comments>cod_cliente</comments>
+        <conversion_Mask>####0;-####0</conversion_Mask>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en</date_format_locale>
+        <date_format_timezone>Etc/UTC</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>Date</type>
+        <storagetype>normal</storagetype>
+        <name>fecha_fin</name>
+        <length>-1</length>
+        <precision>-1</precision>
+        <origin>Input Contrato</origin>
+        <comments>fecha_fin</comments>
+        <conversion_Mask/>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en</date_format_locale>
+        <date_format_timezone>Etc/UTC</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+    </row-meta>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>144</xloc>
+      <yloc>304</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Sort Por cliente y producto</name>
+    <type>SortRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <directory>%%java.io.tmpdir%%</directory>
+    <prefix>out</prefix>
+    <sort_size>1000000</sort_size>
+    <free_memory/>
+    <compress>N</compress>
+    <compress_variable/>
+    <unique_rows>N</unique_rows>
+    <fields>
+      <field>
+        <name>cod_cliente</name>
+        <ascending>Y</ascending>
+        <case_sensitive>N</case_sensitive>
+        <collator_enabled>N</collator_enabled>
+        <collator_strength>0</collator_strength>
+        <presorted>N</presorted>
+      </field>
+      <field>
+        <name>cod_producto</name>
+        <ascending>Y</ascending>
+        <case_sensitive>N</case_sensitive>
+        <collator_enabled>N</collator_enabled>
+        <collator_strength>0</collator_strength>
+        <presorted>N</presorted>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>384</xloc>
+      <yloc>160</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Sorto de cliente y producto cronologico</name>
+    <type>SortRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <directory>%%java.io.tmpdir%%</directory>
+    <prefix>out</prefix>
+    <sort_size>1000000</sort_size>
+    <free_memory/>
+    <compress>N</compress>
+    <compress_variable/>
+    <unique_rows>N</unique_rows>
+    <fields>
+      <field>
+        <name>cod_cliente</name>
+        <ascending>Y</ascending>
+        <case_sensitive>N</case_sensitive>
+        <collator_enabled>N</collator_enabled>
+        <collator_strength>0</collator_strength>
+        <presorted>N</presorted>
+      </field>
+      <field>
+        <name>fecha_fin</name>
+        <ascending>Y</ascending>
+        <case_sensitive>N</case_sensitive>
+        <collator_enabled>N</collator_enabled>
+        <collator_strength>0</collator_strength>
+        <presorted>N</presorted>
+      </field>
+      <field>
+        <name>cod_producto</name>
+        <ascending>Y</ascending>
+        <case_sensitive>N</case_sensitive>
+        <collator_enabled>N</collator_enabled>
+        <collator_strength>0</collator_strength>
+        <presorted>N</presorted>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>384</xloc>
+      <yloc>304</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Seq_Con (Ordenar Contratos de un mismo cliente cronologicamente)</name>
+    <type>FieldsChangeSequence</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <start>1</start>
+    <increment>1</increment>
+    <resultfieldName>nro_con</resultfieldName>
+    <fields>
+      <field>
+        <name>cod_cliente</name>
+      </field>
+      <field>
+        <name>cod_producto</name>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>800</xloc>
+      <yloc>304</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Seq_Ev (Ordenar por un mismo producto las evaluaciones)</name>
+    <type>FieldsChangeSequence</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <start>1</start>
+    <increment>1</increment>
+    <resultfieldName>nro_ev</resultfieldName>
+    <fields>
+      <field>
+        <name>cod_cliente</name>
+      </field>
+      <field>
+        <name>cod_producto</name>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>736</xloc>
+      <yloc>160</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Evaluaciones Cronologicas</name>
+    <type>MergeJoin</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <join_type>INNER</join_type>
+    <step1>Seq_Ev (Ordenar por un mismo producto las evaluaciones)</step1>
+    <step2>Seq_Con (Ordenar Contratos de un mismo cliente cronologicamente)</step2>
+    <keys_1>
+      <key>cod_cliente</key>
+      <key>cod_producto</key>
+      <key>nro_ev</key>
+    </keys_1>
+    <keys_2>
+      <key>cod_cliente</key>
+      <key>cod_producto</key>
+      <key>nro_con</key>
+    </keys_2>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>1168</xloc>
+      <yloc>304</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Fact Evaluacion Servicio Output</name>
+    <type>TableOutput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>BI-database</connection>
+    <schema>seguro_dw_g28310422</schema>
+    <table>fact_evaluacion_servicio</table>
+    <commit>1000</commit>
+    <truncate>N</truncate>
+    <ignore_errors>Y</ignore_errors>
+    <use_batch>N</use_batch>
+    <specify_fields>N</specify_fields>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field/>
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field/>
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field/>
+    <fields>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>1872</xloc>
+      <yloc>160</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>sk_dim_tiempo (fecha ev)</name>
+    <type>DBLookup</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>BI-database</connection>
+    <cache>Y</cache>
+    <cache_load_all>N</cache_load_all>
+    <cache_size>0</cache_size>
     <lookup>
       <schema>seguro_dw_g28310422</schema>
-      <table>fact_evaluacion_servicio</table>
+      <table>dim_tiempo</table>
+      <orderby/>
+      <fail_on_multiple>N</fail_on_multiple>
+      <eat_row_on_failure>N</eat_row_on_failure>
       <key>
-        <name>sk_dim_cliente</name>
-        <field>sk_dim_cliente</field>
-        <condition>=</condition>
-        <name2/>
-      </key>
-      <key>
-        <name>sk_dim_producto</name>
-        <field>sk_dim_producto</field>
-        <condition>=</condition>
-        <name2/>
-      </key>
-      <key>
-        <name>sk_dim_evaluacion_servicio</name>
-        <field>sk_dim_evaluacion_servicio</field>
+        <name>fecha_fin</name>
+        <field>fecha_completa</field>
         <condition>=</condition>
         <name2/>
       </key>
       <value>
-        <name>recomienda_amigo</name>
-        <rename>recomienda_amigo</rename>
-        <update>Y</update>
-      </value>
-      <value>
-        <name>sk_dim_cliente</name>
-        <rename>sk_dim_cliente</rename>
-        <update>N</update>
-      </value>
-      <value>
-        <name>sk_dim_evaluacion_servicio</name>
-        <rename>sk_dim_evaluacion_servicio</rename>
-        <update>N</update>
-      </value>
-      <value>
-        <name>sk_dim_producto</name>
-        <rename>sk_dim_producto</rename>
-        <update>N</update>
+        <name>sk_dim_tiempo</name>
+        <rename>sk_fecha_evaluacion</rename>
+        <default/>
+        <type>None</type>
       </value>
     </lookup>
     <attributes/>
@@ -865,128 +1381,20 @@ FROM seguro_g28310422.recomienda
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1088</xloc>
-      <yloc>160</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Error Handling ETL</name>
-    <type>Dummy</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>1088</xloc>
-      <yloc>304</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>mapear recomienda amigo SI/NO -> 1/0</name>
-    <type>ValueMapper</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <field_to_use>recomienda_amigo</field_to_use>
-    <target_field/>
-    <non_match_default/>
-    <fields>
-      <field>
-        <source_value>SI</source_value>
-        <target_value>1</target_value>
-      </field>
-      <field>
-        <source_value>NO</source_value>
-        <target_value>0</target_value>
-      </field>
-    </fields>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>736</xloc>
-      <yloc>64</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Convertir Recomienda Amigo a Numero</name>
-    <type>SelectValues</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <fields>
-      <select_unspecified>N</select_unspecified>
-      <meta>
-        <name>recomienda_amigo</name>
-        <rename>recomienda_amigo</rename>
-        <type>Integer</type>
-        <length>-2</length>
-        <precision>-2</precision>
-        <conversion_mask/>
-        <date_format_lenient>false</date_format_lenient>
-        <date_format_locale/>
-        <date_format_timezone/>
-        <lenient_string_to_number>false</lenient_string_to_number>
-        <encoding/>
-        <decimal_symbol/>
-        <grouping_symbol/>
-        <currency_symbol/>
-        <storage_type/>
-      </meta>
-    </fields>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>1088</xloc>
+      <xloc>1168</xloc>
       <yloc>64</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step_error_handling>
     <error>
-      <source_step>Upsert Fact Evaluacion Servicio Output</source_step>
+      <source_step>Fact Evaluacion Servicio Output</source_step>
       <target_step>Error Handling ETL</target_step>
       <is_enabled>Y</is_enabled>
-      <nr_valuename>nro_errores</nr_valuename>
-      <descriptions_valuename>descripcion_errores</descriptions_valuename>
-      <fields_valuename>campos_errors</fields_valuename>
-      <codes_valuename>cod_error</codes_valuename>
+      <nr_valuename/>
+      <descriptions_valuename>error_msg</descriptions_valuename>
+      <fields_valuename/>
+      <codes_valuename/>
       <max_errors/>
       <max_pct_errors/>
       <min_pct_rows/>

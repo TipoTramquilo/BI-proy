@@ -315,16 +315,17 @@ create table FACT_REGISTRO_SINIESTRO (
 
 -- fact_evaluacion_servicio
 create table FACT_EVALUACION_SERVICIO (
-    -- pk propia: permite que un cliente recurrente evalúe y califique el mismo producto en contratos diferentes a lo largo del tiempo (evita la colisión cliente-producto).
-    sk_fact_eval_servicio serial primary key, 
     sk_dim_cliente int not null,
     sk_dim_producto int not null,
     sk_dim_evaluacion_servicio int not null,
+    sk_fecha_evaluacion int not null,
     cantidad int default 1,
     recomienda_amigo smallint,
+    PRIMARY KEY (sk_dim_cliente, sk_dim_producto, sk_dim_evaluacion_servicio, sk_fecha_evaluacion),
     constraint fk_fact_eval_cliente foreign key (sk_dim_cliente) references DIM_CLIENTE(sk_dim_cliente),
     constraint fk_fact_eval_producto foreign key (sk_dim_producto) references DIM_PRODUCTO(sk_dim_producto),
-    constraint fk_fact_eval_eval foreign key (sk_dim_evaluacion_servicio) references DIM_EVALUACION_SERVICIO(sk_dim_evaluacion_servicio)
+    constraint fk_fact_eval_eval foreign key (sk_dim_evaluacion_servicio) references DIM_EVALUACION_SERVICIO(sk_dim_evaluacion_servicio),
+    constraint fk_fact_eval_tiempo foreign key (sk_fecha_evaluacion) references DIM_TIEMPO(sk_dim_tiempo)
 );
 
 -- fact_metas
