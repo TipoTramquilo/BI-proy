@@ -520,7 +520,7 @@
     </hop>
     <hop>
       <from>Lower And Init Cap</from>
-      <to>Output DIM Sucursal</to>
+      <to>Upsert Dim Sucursal</to>
       <enabled>Y</enabled>
     </hop>
   </order>
@@ -1004,8 +1004,8 @@ FROM seguro_g28310422.sucursal ORDER BY cod_ciudad
     </GUI>
   </step>
   <step>
-    <name>Output DIM Sucursal</name>
-    <type>TableOutput</type>
+    <name>Upsert Dim Sucursal</name>
+    <type>InsertUpdate</type>
     <description/>
     <distribute>Y</distribute>
     <custom_distribution/>
@@ -1015,48 +1015,48 @@ FROM seguro_g28310422.sucursal ORDER BY cod_ciudad
       <schema_name/>
     </partitioning>
     <connection>BI-database</connection>
-    <schema>seguro_dw_g28310422</schema>
-    <table>dim_sucursal</table>
-    <commit>1000</commit>
-    <truncate>N</truncate>
-    <ignore_errors>N</ignore_errors>
-    <use_batch>Y</use_batch>
-    <specify_fields>Y</specify_fields>
-    <partitioning_enabled>N</partitioning_enabled>
-    <partitioning_field/>
-    <partitioning_daily>N</partitioning_daily>
-    <partitioning_monthly>Y</partitioning_monthly>
-    <tablename_in_field>N</tablename_in_field>
-    <tablename_field/>
-    <tablename_in_table>Y</tablename_in_table>
-    <return_keys>N</return_keys>
-    <return_field/>
-    <fields>
-      <field>
-        <column_name>cod_sucursal</column_name>
-        <stream_name>cod_sucursal</stream_name>
-      </field>
-      <field>
-        <column_name>nb_sucursal</column_name>
-        <stream_name>nb_sucursal</stream_name>
-      </field>
-      <field>
-        <column_name>cod_ciudad</column_name>
-        <stream_name>cod_ciudad</stream_name>
-      </field>
-      <field>
-        <column_name>nb_ciudad</column_name>
-        <stream_name>nb_ciudad</stream_name>
-      </field>
-      <field>
-        <column_name>cod_pais</column_name>
-        <stream_name>cod_pais</stream_name>
-      </field>
-      <field>
-        <column_name>nb_pais</column_name>
-        <stream_name>nb_pais</stream_name>
-      </field>
-    </fields>
+    <commit>100</commit>
+    <update_bypassed>N</update_bypassed>
+    <lookup>
+      <schema>seguro_dw_g28310422</schema>
+      <table>dim_sucursal</table>
+      <key>
+        <name>cod_sucursal</name>
+        <field>cod_sucursal</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <value>
+        <name>cod_sucursal</name>
+        <rename>cod_sucursal</rename>
+        <update>N</update>
+      </value>
+      <value>
+        <name>nb_sucursal</name>
+        <rename>nb_sucursal</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>cod_ciudad</name>
+        <rename>cod_ciudad</rename>
+        <update>N</update>
+      </value>
+      <value>
+        <name>nb_ciudad</name>
+        <rename>nb_ciudad</rename>
+        <update>N</update>
+      </value>
+      <value>
+        <name>cod_pais</name>
+        <rename>cod_pais</rename>
+        <update>N</update>
+      </value>
+      <value>
+        <name>nb_pais</name>
+        <rename>nb_pais</rename>
+        <update>N</update>
+      </value>
+    </lookup>
     <attributes/>
     <cluster_schema/>
     <remotesteps>
@@ -1066,8 +1066,8 @@ FROM seguro_g28310422.sucursal ORDER BY cod_ciudad
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1136</xloc>
-      <yloc>272</yloc>
+      <xloc>1328</xloc>
+      <yloc>176</yloc>
       <draw>Y</draw>
     </GUI>
   </step>

@@ -495,62 +495,10 @@
     </hop>
     <hop>
       <from>Lower N Init Cap</from>
-      <to>Dim Evaluacion Servicio</to>
+      <to>Upsert Dim Evaluacion Servicio</to>
       <enabled>Y</enabled>
     </hop>
   </order>
-  <step>
-    <name>Dim Evaluacion Servicio</name>
-    <type>TableOutput</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <connection>BI-database</connection>
-    <schema>seguro_dw_g28310422</schema>
-    <table>dim_evaluacion_servicio</table>
-    <commit>1000</commit>
-    <truncate>N</truncate>
-    <ignore_errors>N</ignore_errors>
-    <use_batch>Y</use_batch>
-    <specify_fields>Y</specify_fields>
-    <partitioning_enabled>N</partitioning_enabled>
-    <partitioning_field/>
-    <partitioning_daily>N</partitioning_daily>
-    <partitioning_monthly>Y</partitioning_monthly>
-    <tablename_in_field>N</tablename_in_field>
-    <tablename_field/>
-    <tablename_in_table>Y</tablename_in_table>
-    <return_keys>N</return_keys>
-    <return_field/>
-    <fields>
-      <field>
-        <column_name>cod_evaluacion</column_name>
-        <stream_name>cod_evaluacion_servicio</stream_name>
-      </field>
-      <field>
-        <column_name>nb_descrip</column_name>
-        <stream_name>nb_descripcion</stream_name>
-      </field>
-    </fields>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>600</xloc>
-      <yloc>100</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
   <step>
     <name>Input Evaluacion Servicio</name>
     <type>TableInput</type>
@@ -672,6 +620,54 @@ FROM seguro_g28310422.evaluacion_servicio
     </remotesteps>
     <GUI>
       <xloc>400</xloc>
+      <yloc>100</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Upsert Dim Evaluacion Servicio</name>
+    <type>InsertUpdate</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>BI-database</connection>
+    <commit>100</commit>
+    <update_bypassed>N</update_bypassed>
+    <lookup>
+      <schema>seguro_dw_g28310422</schema>
+      <table>dim_evaluacion_servicio</table>
+      <key>
+        <name>cod_evaluacion_servicio</name>
+        <field>cod_evaluacion</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <value>
+        <name>cod_evaluacion</name>
+        <rename>cod_evaluacion_servicio</rename>
+        <update>N</update>
+      </value>
+      <value>
+        <name>nb_descrip</name>
+        <rename>nb_descripcion</rename>
+        <update>Y</update>
+      </value>
+    </lookup>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>600</xloc>
       <yloc>100</yloc>
       <draw>Y</draw>
     </GUI>

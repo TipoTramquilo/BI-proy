@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
     <name>DIM_TIEMPO</name>
@@ -567,7 +568,7 @@
         <currency/>
         <decimal/>
         <group/>
-        <nullif>20001001</nullif>
+        <nullif>20171001</nullif>
         <length>-1</length>
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
@@ -769,8 +770,8 @@
     </GUI>
   </step>
   <step>
-    <name>Trimestres</name>
-    <type>ValueMapper</type>
+    <name>DIM TIEMPO</name>
+    <type>TableOutput</type>
     <description/>
     <distribute>Y</distribute>
     <custom_distribution/>
@@ -779,57 +780,55 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <field_to_use>Month</field_to_use>
-    <target_field>Quarter</target_field>
-    <non_match_default/>
+    <connection>BI-database</connection>
+    <schema>seguro_dw_g28310422</schema>
+    <table>dim_tiempo</table>
+    <commit>100</commit>
+    <truncate>N</truncate>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <specify_fields>Y</specify_fields>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field/>
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field/>
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field/>
     <fields>
       <field>
-        <source_value>1</source_value>
-        <target_value>Q1</target_value>
+        <column_name>sk_dim_tiempo</column_name>
+        <stream_name>sk_dim_tiempo</stream_name>
       </field>
       <field>
-        <source_value>2</source_value>
-        <target_value>Q1</target_value>
+        <column_name>cod_annio</column_name>
+        <stream_name>cod_annio</stream_name>
       </field>
       <field>
-        <source_value>3</source_value>
-        <target_value>Q1</target_value>
+        <column_name>cod_mes</column_name>
+        <stream_name>cod_mes</stream_name>
       </field>
       <field>
-        <source_value>4</source_value>
-        <target_value>Q2</target_value>
+        <column_name>cod_dia</column_name>
+        <stream_name>cod_dia</stream_name>
       </field>
       <field>
-        <source_value>5</source_value>
-        <target_value>Q2</target_value>
+        <column_name>desc_mes</column_name>
+        <stream_name>desc_mes</stream_name>
       </field>
       <field>
-        <source_value>6</source_value>
-        <target_value>Q2</target_value>
+        <column_name>desc_trimestre</column_name>
+        <stream_name>desc_trimestre</stream_name>
       </field>
       <field>
-        <source_value>7</source_value>
-        <target_value>Q3</target_value>
+        <column_name>desc_semestre</column_name>
+        <stream_name>desc_semestre</stream_name>
       </field>
       <field>
-        <source_value>8</source_value>
-        <target_value>Q3</target_value>
-      </field>
-      <field>
-        <source_value>9</source_value>
-        <target_value>Q3</target_value>
-      </field>
-      <field>
-        <source_value>10</source_value>
-        <target_value>Q4</target_value>
-      </field>
-      <field>
-        <source_value>11</source_value>
-        <target_value>Q4</target_value>
-      </field>
-      <field>
-        <source_value>12</source_value>
-        <target_value>Q4</target_value>
+        <column_name>fecha_completa</column_name>
+        <stream_name>fecha_completa</stream_name>
       </field>
     </fields>
     <attributes/>
@@ -841,42 +840,7 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>336</xloc>
-      <yloc>208</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Semestres</name>
-    <type>ValueMapper</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <field_to_use>Month</field_to_use>
-    <target_field>Semester</target_field>
-    <non_match_default/>
-    <fields>
-      <field><source_value>1</source_value><target_value>S1</target_value></field>
-      <field><source_value>2</source_value><target_value>S1</target_value></field>
-      <field><source_value>3</source_value><target_value>S1</target_value></field>
-      <field><source_value>4</source_value><target_value>S1</target_value></field>
-      <field><source_value>5</source_value><target_value>S1</target_value></field>
-      <field><source_value>6</source_value><target_value>S1</target_value></field>
-      <field><source_value>7</source_value><target_value>S2</target_value></field>
-      <field><source_value>8</source_value><target_value>S2</target_value></field>
-      <field><source_value>9</source_value><target_value>S2</target_value></field>
-      <field><source_value>10</source_value><target_value>S2</target_value></field>
-      <field><source_value>11</source_value><target_value>S2</target_value></field>
-      <field><source_value>12</source_value><target_value>S2</target_value></field>
-    </fields>
-    <attributes/>
-    <GUI>
-      <xloc>380</xloc>
+      <xloc>720</xloc>
       <yloc>208</yloc>
       <draw>Y</draw>
     </GUI>
@@ -1958,8 +1922,8 @@
     </GUI>
   </step>
   <step>
-    <name>DIM TIEMPO</name>
-    <type>TableOutput</type>
+    <name>Semestres</name>
+    <type>ValueMapper</type>
     <description/>
     <distribute>Y</distribute>
     <custom_distribution/>
@@ -1968,55 +1932,57 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <connection>BI-database</connection>
-    <schema>seguro_dw_g28310422</schema>
-    <table>dim_tiempo</table>
-    <commit>100</commit>
-    <truncate>N</truncate>
-    <ignore_errors>N</ignore_errors>
-    <use_batch>Y</use_batch>
-    <specify_fields>Y</specify_fields>
-    <partitioning_enabled>N</partitioning_enabled>
-    <partitioning_field/>
-    <partitioning_daily>N</partitioning_daily>
-    <partitioning_monthly>Y</partitioning_monthly>
-    <tablename_in_field>N</tablename_in_field>
-    <tablename_field/>
-    <tablename_in_table>Y</tablename_in_table>
-    <return_keys>N</return_keys>
-    <return_field/>
+    <field_to_use>Month</field_to_use>
+    <target_field>Semester</target_field>
+    <non_match_default/>
     <fields>
       <field>
-        <column_name>sk_dim_tiempo</column_name>
-        <stream_name>sk_dim_tiempo</stream_name>
+        <source_value>1</source_value>
+        <target_value>S1</target_value>
       </field>
       <field>
-        <column_name>cod_annio</column_name>
-        <stream_name>cod_annio</stream_name>
+        <source_value>2</source_value>
+        <target_value>S1</target_value>
       </field>
       <field>
-        <column_name>cod_mes</column_name>
-        <stream_name>cod_mes</stream_name>
+        <source_value>3</source_value>
+        <target_value>S1</target_value>
       </field>
       <field>
-        <column_name>cod_dia</column_name>
-        <stream_name>cod_dia</stream_name>
+        <source_value>4</source_value>
+        <target_value>S1</target_value>
       </field>
       <field>
-        <column_name>desc_mes</column_name>
-        <stream_name>desc_mes</stream_name>
+        <source_value>5</source_value>
+        <target_value>S1</target_value>
       </field>
       <field>
-        <column_name>desc_trimestre</column_name>
-        <stream_name>desc_trimestre</stream_name>
+        <source_value>6</source_value>
+        <target_value>S1</target_value>
       </field>
       <field>
-        <column_name>desc_semestre</column_name>
-        <stream_name>desc_semestre</stream_name>
+        <source_value>7</source_value>
+        <target_value>S2</target_value>
       </field>
       <field>
-        <column_name>fecha_completa</column_name>
-        <stream_name>fecha_completa</stream_name>
+        <source_value>8</source_value>
+        <target_value>S2</target_value>
+      </field>
+      <field>
+        <source_value>9</source_value>
+        <target_value>S2</target_value>
+      </field>
+      <field>
+        <source_value>10</source_value>
+        <target_value>S2</target_value>
+      </field>
+      <field>
+        <source_value>11</source_value>
+        <target_value>S2</target_value>
+      </field>
+      <field>
+        <source_value>12</source_value>
+        <target_value>S2</target_value>
       </field>
     </fields>
     <attributes/>
@@ -2028,11 +1994,91 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>720</xloc>
+      <xloc>380</xloc>
       <yloc>208</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
+  <step>
+    <name>Trimestres</name>
+    <type>ValueMapper</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <field_to_use>Month</field_to_use>
+    <target_field>Quarter</target_field>
+    <non_match_default/>
+    <fields>
+      <field>
+        <source_value>1</source_value>
+        <target_value>Q1</target_value>
+      </field>
+      <field>
+        <source_value>2</source_value>
+        <target_value>Q1</target_value>
+      </field>
+      <field>
+        <source_value>3</source_value>
+        <target_value>Q1</target_value>
+      </field>
+      <field>
+        <source_value>4</source_value>
+        <target_value>Q2</target_value>
+      </field>
+      <field>
+        <source_value>5</source_value>
+        <target_value>Q2</target_value>
+      </field>
+      <field>
+        <source_value>6</source_value>
+        <target_value>Q2</target_value>
+      </field>
+      <field>
+        <source_value>7</source_value>
+        <target_value>Q3</target_value>
+      </field>
+      <field>
+        <source_value>8</source_value>
+        <target_value>Q3</target_value>
+      </field>
+      <field>
+        <source_value>9</source_value>
+        <target_value>Q3</target_value>
+      </field>
+      <field>
+        <source_value>10</source_value>
+        <target_value>Q4</target_value>
+      </field>
+      <field>
+        <source_value>11</source_value>
+        <target_value>Q4</target_value>
+      </field>
+      <field>
+        <source_value>12</source_value>
+        <target_value>Q4</target_value>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>336</xloc>
+      <yloc>208</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step_error_handling>
+  </step_error_handling>
   <slave-step-copy-partition-distribution>
   </slave-step-copy-partition-distribution>
   <slave_transformation>N</slave_transformation>

@@ -495,7 +495,7 @@
     </hop>
     <hop>
       <from>Lower And Init Cap</from>
-      <to>Output Contrato</to>
+      <to>Upsert Dim Contrato</to>
       <enabled>Y</enabled>
     </hop>
   </order>
@@ -585,58 +585,6 @@ FROM seguro_g28310422.contrato
     </GUI>
   </step>
   <step>
-    <name>Output Contrato</name>
-    <type>TableOutput</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <connection>BI-database</connection>
-    <schema>seguro_dw_g28310422</schema>
-    <table>dim_contrato</table>
-    <commit>1000</commit>
-    <truncate>N</truncate>
-    <ignore_errors>N</ignore_errors>
-    <use_batch>Y</use_batch>
-    <specify_fields>Y</specify_fields>
-    <partitioning_enabled>N</partitioning_enabled>
-    <partitioning_field/>
-    <partitioning_daily>N</partitioning_daily>
-    <partitioning_monthly>Y</partitioning_monthly>
-    <tablename_in_field>N</tablename_in_field>
-    <tablename_field/>
-    <tablename_in_table>Y</tablename_in_table>
-    <return_keys>N</return_keys>
-    <return_field/>
-    <fields>
-      <field>
-        <column_name>nro_contrato</column_name>
-        <stream_name>nro_contrato</stream_name>
-      </field>
-      <field>
-        <column_name>descrip_contrato</column_name>
-        <stream_name>descrip_contrato</stream_name>
-      </field>
-    </fields>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>592</xloc>
-      <yloc>192</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
     <name>Lower And Init Cap</name>
     <type>StringOperations</type>
     <description/>
@@ -672,6 +620,54 @@ FROM seguro_g28310422.contrato
     </remotesteps>
     <GUI>
       <xloc>416</xloc>
+      <yloc>192</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Upsert Dim Contrato</name>
+    <type>InsertUpdate</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>BI-database</connection>
+    <commit>100</commit>
+    <update_bypassed>N</update_bypassed>
+    <lookup>
+      <schema>seguro_dw_g28310422</schema>
+      <table>dim_contrato</table>
+      <key>
+        <name>nro_contrato</name>
+        <field>nro_contrato</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <value>
+        <name>nro_contrato</name>
+        <rename>nro_contrato</rename>
+        <update>N</update>
+      </value>
+      <value>
+        <name>descrip_contrato</name>
+        <rename>descrip_contrato</rename>
+        <update>Y</update>
+      </value>
+    </lookup>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>616</xloc>
       <yloc>192</yloc>
       <draw>Y</draw>
     </GUI>
