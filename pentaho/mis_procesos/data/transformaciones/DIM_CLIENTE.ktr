@@ -431,7 +431,7 @@
     <created_date>2026/07/10 01:54:22.056</created_date>
     <modified_user>-</modified_user>
     <modified_date>2026/07/10 01:54:22.056</modified_date>
-    <key_for_session_key/>
+    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA=</key_for_session_key>
     <is_key_private>N</is_key_private>
   </info>
   <notepads>
@@ -495,10 +495,50 @@
     </hop>
     <hop>
       <from>If field value is null</from>
-      <to>Output_DIM_CLIENTE</to>
+      <to>Upsert Dim Cliente</to>
       <enabled>Y</enabled>
     </hop>
   </order>
+  <step>
+    <name>If field value is null</name>
+    <type>IfNull</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <replaceAllByValue>N/A</replaceAllByValue>
+    <replaceAllMask/>
+    <selectFields>N</selectFields>
+    <selectValuesType>N</selectValuesType>
+    <setEmptyStringAll>N</setEmptyStringAll>
+    <valuetypes>
+      </valuetypes>
+    <fields>
+      <field>
+        <name>direccion</name>
+        <value/>
+        <mask/>
+        <set_empty_string>N</set_empty_string>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>416</xloc>
+      <yloc>176</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
   <step>
     <name>Input_Cliente</name>
     <type>TableInput</type>
@@ -705,48 +745,8 @@ FROM seguro_g28310422.cliente as c
     </GUI>
   </step>
   <step>
-    <name>If field value is null</name>
-    <type>IfNull</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <replaceAllByValue>N/A</replaceAllByValue>
-    <replaceAllMask/>
-    <selectFields>N</selectFields>
-    <selectValuesType>N</selectValuesType>
-    <setEmptyStringAll>N</setEmptyStringAll>
-    <valuetypes>
-      </valuetypes>
-    <fields>
-      <field>
-        <name>direccion</name>
-        <value/>
-        <mask/>
-        <set_empty_string>N</set_empty_string>
-      </field>
-    </fields>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>416</xloc>
-      <yloc>176</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Output_DIM_CLIENTE</name>
-    <type>TableOutput</type>
+    <name>Upsert Dim Cliente</name>
+    <type>InsertUpdate</type>
     <description/>
     <distribute>Y</distribute>
     <custom_distribution/>
@@ -756,52 +756,53 @@ FROM seguro_g28310422.cliente as c
       <schema_name/>
     </partitioning>
     <connection>BI-database</connection>
-    <schema>seguro_dw_g28310422</schema>
-    <table>dim_cliente</table>
-    <commit>1000</commit>
-    <truncate>N</truncate>
-    <ignore_errors>N</ignore_errors>
-    <use_batch>Y</use_batch>
-    <specify_fields>Y</specify_fields>
-    <partitioning_enabled>N</partitioning_enabled>
-    <partitioning_field/>
-    <partitioning_daily>N</partitioning_daily>
-    <partitioning_monthly>Y</partitioning_monthly>
-    <tablename_in_field>N</tablename_in_field>
-    <tablename_field/>
-    <tablename_in_table>Y</tablename_in_table>
-    <return_keys>N</return_keys>
-    <return_field/>
-    <fields>
-      <field>
-        <column_name>cod_cliente</column_name>
-        <stream_name>cod_cliente</stream_name>
-      </field>
-      <field>
-        <column_name>nb_cliente</column_name>
-        <stream_name>nb_cliente</stream_name>
-      </field>
-      <field>
-        <column_name>ci_rif</column_name>
-        <stream_name>ci_rif</stream_name>
-      </field>
-      <field>
-        <column_name>telefono</column_name>
-        <stream_name>telefono</stream_name>
-      </field>
-      <field>
-        <column_name>direccion</column_name>
-        <stream_name>direccion</stream_name>
-      </field>
-      <field>
-        <column_name>sexo</column_name>
-        <stream_name>sexo</stream_name>
-      </field>
-      <field>
-        <column_name>email</column_name>
-        <stream_name>email</stream_name>
-      </field>
-    </fields>
+    <commit>100</commit>
+    <update_bypassed>N</update_bypassed>
+    <lookup>
+      <schema>seguro_dw_g28310422</schema>
+      <table>dim_cliente</table>
+      <key>
+        <name>cod_cliente</name>
+        <field>cod_cliente</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <value>
+        <name>cod_cliente</name>
+        <rename>cod_cliente</rename>
+        <update>N</update>
+      </value>
+      <value>
+        <name>nb_cliente</name>
+        <rename>nb_cliente</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>ci_rif</name>
+        <rename>ci_rif</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>telefono</name>
+        <rename>telefono</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>direccion</name>
+        <rename>direccion</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>sexo</name>
+        <rename>sexo</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>email</name>
+        <rename>email</rename>
+        <update>Y</update>
+      </value>
+    </lookup>
     <attributes/>
     <cluster_schema/>
     <remotesteps>
@@ -811,7 +812,7 @@ FROM seguro_g28310422.cliente as c
       </output>
     </remotesteps>
     <GUI>
-      <xloc>672</xloc>
+      <xloc>616</xloc>
       <yloc>176</yloc>
       <draw>Y</draw>
     </GUI>
