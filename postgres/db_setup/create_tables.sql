@@ -246,15 +246,23 @@ create table FACT_REGISTRO_CONTRATO (
     sk_dim_estado_contrato int not null,
     monto real,
     cantidad int default 1,
-    cantidad_cliente int,
-    cantidad_producto int,
-    cantidad_contrato int,
+    cantidad_cliente int default 1,
+    cantidad_producto int  int default 1,
+    cantidad_contrato int  int default 1,
     constraint fk_fact_contrato_inicio foreign key (sk_dim_tiempo_fecha_inicio) references DIM_TIEMPO(sk_dim_tiempo),
     constraint fk_fact_contrato_fin foreign key (sk_dim_tiempo_fecha_fin) references DIM_TIEMPO(sk_dim_tiempo),
     constraint fk_fact_contrato_cliente foreign key (sk_dim_cliente) references DIM_CLIENTE(sk_dim_cliente),
     constraint fk_fact_contrato_contrato foreign key (sk_dim_contrato) references DIM_CONTRATO(sk_dim_contrato),
     constraint fk_fact_contrato_producto foreign key (sk_dim_producto) references DIM_PRODUCTO(sk_dim_producto),
     constraint fk_fact_contrato_estado foreign key (sk_dim_estado_contrato) references DIM_ESTADO_CONTRATO(sk_dim_estado_contrato)
+
+    CONSTRAINT uq_registro_contrato_negocio UNIQUE (
+        sk_dim_tiempo_fecha_inicio, 
+        sk_dim_tiempo_fecha_fin, 
+        sk_dim_cliente, 
+        sk_dim_contrato, 
+        sk_dim_producto
+    ) 
 );
 
 -- fact_registro_siniestro
@@ -280,6 +288,15 @@ create table FACT_REGISTRO_SINIESTRO (
     constraint fk_fact_siniestro_producto foreign key (sk_dim_producto) references DIM_PRODUCTO(sk_dim_producto),
     constraint fk_fact_siniestro_siniestro foreign key (sk_dim_siniestro) references DIM_SINIESTRO(sk_dim_siniestro),
     constraint chk_id_rechazo check (id_rechazo in ('SI', 'NO'))
+    CONSTRAINT uq_registro_siniestro_negocio UNIQUE (
+        sk_fecha_siniestro,
+        sk_fecha_respuesta,
+        sk_dim_cliente,
+        sk_dim_contrato,
+        sk_dim_sucursal,
+        sk_dim_producto,
+        sk_dim_siniestro
+    ) 
 );
 
 -- fact_evaluacion_servicio
