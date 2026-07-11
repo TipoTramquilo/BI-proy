@@ -229,6 +229,20 @@ create table DIM_SINIESTRO (
     descrip_siniestro varchar(255)
 );
 
+-- create table DIM_SEGMENTO_CLIENTE (
+--     sk_dim_segmento_cliente serial primary key,
+--     descrip_segmento varchar(50) not null,
+-- )
+
+-- create table DIM_PUENTE_SEGMENTO_CLIENTE (
+--     sk_dim_segmento_cliente int,
+--     sk_dim_cliente int,
+--     PRIMARY KEY (sk_dim_cliente, sk_dim_segmento_cliente),
+--     CONSTRAINT FK_DIM_CLIENTE FOREIGN KEY (sk_dim_cliente) REFERENCES DIM_CLIENTE(sk_dim_cliente),
+--     CONSTRAINT FK_DIM_SEGMENTO FOREIGN KEY (sk_dim_segmento_cliente) REFERENCES DIM_SEGMENTO_CLIENTE(sk_dim_segmento_cliente),
+-- )
+
+
 
 -- ============================================================================
 -- 2. CREACIÓN DE LAS TABLAS DE HECHOS (CON JUSTIFICACIÓN TÉCNICA)
@@ -247,14 +261,14 @@ create table FACT_REGISTRO_CONTRATO (
     monto real,
     cantidad int default 1,
     cantidad_cliente int default 1,
-    cantidad_producto int  int default 1,
-    cantidad_contrato int  int default 1,
+    cantidad_producto int default 1,
+    cantidad_contrato int default 1,
     constraint fk_fact_contrato_inicio foreign key (sk_dim_tiempo_fecha_inicio) references DIM_TIEMPO(sk_dim_tiempo),
     constraint fk_fact_contrato_fin foreign key (sk_dim_tiempo_fecha_fin) references DIM_TIEMPO(sk_dim_tiempo),
     constraint fk_fact_contrato_cliente foreign key (sk_dim_cliente) references DIM_CLIENTE(sk_dim_cliente),
     constraint fk_fact_contrato_contrato foreign key (sk_dim_contrato) references DIM_CONTRATO(sk_dim_contrato),
     constraint fk_fact_contrato_producto foreign key (sk_dim_producto) references DIM_PRODUCTO(sk_dim_producto),
-    constraint fk_fact_contrato_estado foreign key (sk_dim_estado_contrato) references DIM_ESTADO_CONTRATO(sk_dim_estado_contrato)
+    constraint fk_fact_contrato_estado foreign key (sk_dim_estado_contrato) references DIM_ESTADO_CONTRATO(sk_dim_estado_contrato),
 
     CONSTRAINT uq_registro_contrato_negocio UNIQUE (
         sk_dim_tiempo_fecha_inicio, 
@@ -287,7 +301,7 @@ create table FACT_REGISTRO_SINIESTRO (
     constraint fk_fact_siniestro_sucursal foreign key (sk_dim_sucursal) references DIM_SUCURSAL(sk_dim_sucursal),
     constraint fk_fact_siniestro_producto foreign key (sk_dim_producto) references DIM_PRODUCTO(sk_dim_producto),
     constraint fk_fact_siniestro_siniestro foreign key (sk_dim_siniestro) references DIM_SINIESTRO(sk_dim_siniestro),
-    constraint chk_id_rechazo check (id_rechazo in ('SI', 'NO'))
+    constraint chk_id_rechazo check (id_rechazo in ('SI', 'NO')),
     CONSTRAINT uq_registro_siniestro_negocio UNIQUE (
         sk_fecha_siniestro,
         sk_fecha_respuesta,
@@ -307,7 +321,7 @@ create table FACT_EVALUACION_SERVICIO (
     sk_dim_producto int not null,
     sk_dim_evaluacion_servicio int not null,
     cantidad int default 1,
-    recomienda_amigo real,
+    recomienda_amigo smallint,
     constraint fk_fact_eval_cliente foreign key (sk_dim_cliente) references DIM_CLIENTE(sk_dim_cliente),
     constraint fk_fact_eval_producto foreign key (sk_dim_producto) references DIM_PRODUCTO(sk_dim_producto),
     constraint fk_fact_eval_eval foreign key (sk_dim_evaluacion_servicio) references DIM_EVALUACION_SERVICIO(sk_dim_evaluacion_servicio)
@@ -316,18 +330,18 @@ create table FACT_EVALUACION_SERVICIO (
 -- fact_metas
 create table FACT_METAS (
     -- pk propia: optimiza el proceso de actualización y sobrescritura (upserts) de metas anuales importadas periódicamente desde archivos externos de excel.
-    sk_fact_metas serial primary key, 
     sk_dim_fecha_inicio_meta int not null,
     sk_dim_fecha_fin_meta int not null,
-    sk_dim_cliente int not null,
-    sk_dim_producto int not null,
-    sk_dim_contrato int not null,
+    -- sk_dim_cliente int not null, ----> NO TIENE SENTIDO (NO HAY INDICADORES VER ENTREGA 1)
+     sk_dim_producto int not null, -----> NO TIENE SENTIDO (NO HAY INDICADORES VER ENTREGA 1)
+    -- sk_dim_contrato int not null,
     monto_meta_ingreso real,
     meta_renovacion int,
     meta_asegurados int,
+    PRIMARY KEY (sk_dim_fecha_inicio_meta, sk_dim_fecha_fin_meta, sk_dim_producto),
     constraint fk_fact_metas_inicio foreign key (sk_dim_fecha_inicio_meta) references DIM_TIEMPO(sk_dim_tiempo),
     constraint fk_fact_metas_fin foreign key (sk_dim_fecha_fin_meta) references DIM_TIEMPO(sk_dim_tiempo),
-    constraint fk_fact_metas_cliente foreign key (sk_dim_cliente) references DIM_CLIENTE(sk_dim_cliente),
-    constraint fk_fact_metas_producto foreign key (sk_dim_producto) references DIM_PRODUCTO(sk_dim_producto),
-    constraint fk_fact_metas_contrato foreign key (sk_dim_contrato) references DIM_CONTRATO(sk_dim_contrato)
+    -- constraint fk_fact_metas_cliente foreign key (sk_dim_cliente) references DIM_CLIENTE(sk_dim_cliente),
+    constraint fk_fact_metas_producto foreign key (sk_dim_producto) references DIM_PRODUCTO(sk_dim_producto)
+    -- constraint fk_fact_metas_contrato foreign key (sk_dim_contrato) references DIM_CONTRATO(sk_dim_contrato)
 );
