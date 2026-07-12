@@ -495,7 +495,7 @@
     <hop>
       <from>Transformar fechas y monto meta ingreso</from>
       <to>sk dim fecha (inicio)</to>
-      <enabled>N</enabled>
+      <enabled>Y</enabled>
     </hop>
     <hop>
       <from>sk dim fecha (inicio)</from>
@@ -510,7 +510,7 @@
     <hop>
       <from>sk dim producto</from>
       <to>Fact Metas Output</to>
-      <enabled>N</enabled>
+      <enabled>Y</enabled>
     </hop>
     <hop>
       <from>Crear Rango Año</from>
@@ -808,11 +808,6 @@ var fecha_fin = anio + "-12-31";
     </fields>
     <sheets>
       <sheet>
-        <name>Vale viendolo mejor, creo que p</name>
-        <startrow>0</startrow>
-        <startcol>0</startcol>
-      </sheet>
-      <sheet>
         <name>Ver sin Segmentos</name>
         <startrow>0</startrow>
         <startcol>0</startcol>
@@ -973,7 +968,7 @@ var fecha_fin = anio + "-12-31";
       </output>
     </remotesteps>
     <GUI>
-      <xloc>592</xloc>
+      <xloc>576</xloc>
       <yloc>160</yloc>
       <draw>Y</draw>
     </GUI>
@@ -1069,12 +1064,24 @@ var fecha_fin = anio + "-12-31";
       </output>
     </remotesteps>
     <GUI>
-      <xloc>304</xloc>
+      <xloc>288</xloc>
       <yloc>160</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step_error_handling>
+    <error>
+      <source_step>Fact Metas Output</source_step>
+      <target_step/>
+      <is_enabled>Y</is_enabled>
+      <nr_valuename>xd</nr_valuename>
+      <descriptions_valuename>xd</descriptions_valuename>
+      <fields_valuename>xd</fields_valuename>
+      <codes_valuename>xd</codes_valuename>
+      <max_errors/>
+      <max_pct_errors/>
+      <min_pct_rows/>
+    </error>
     <error>
       <source_step>Transformar fechas y monto meta ingreso</source_step>
       <target_step/>
@@ -1083,6 +1090,18 @@ var fecha_fin = anio + "-12-31";
       <descriptions_valuename>xd</descriptions_valuename>
       <fields_valuename>xd</fields_valuename>
       <codes_valuename>xd</codes_valuename>
+      <max_errors/>
+      <max_pct_errors/>
+      <min_pct_rows/>
+    </error>
+    <error>
+      <source_step>sk dim producto</source_step>
+      <target_step/>
+      <is_enabled>Y</is_enabled>
+      <nr_valuename/>
+      <descriptions_valuename/>
+      <fields_valuename/>
+      <codes_valuename/>
       <max_errors/>
       <max_pct_errors/>
       <min_pct_rows/>

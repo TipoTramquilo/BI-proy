@@ -1,0 +1,22 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "postgres-bi": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "postgresql://postgres:postgres@localhost:5432/postgres"
+      ]
+    },
+    "powerbi-modeling": {
+      "type": "local",
+      "command": [
+        "cmd.exe",
+        "/c",
+        "npx -y @microsoft/powerbi-modeling-mcp@latest --start"
+      ]
+    }
+  }
+}
