@@ -23,8 +23,8 @@ $pgDB = "postgres"
 $schema = "SEGURO_G28310422"
 $schemaDW = "SEGURO_DW_G28310422"
 $tmp = "/tmp"
-$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-Set-Location $scriptDir
+$sqlDir = Resolve-Path "$PSScriptRoot\..\postgres\db_setup"
+Set-Location $sqlDir
 
 # 1. Verificar contenedor Docker
 Write-Host "`n"

@@ -46,9 +46,10 @@ try {
 Center ""
 Center "[2/3] 🐘 Levantando Base de Datos (PostgreSQL + pgAdmin)..." Gray
 try {
-    Set-Location ".\postgres"
+    Push-Location "$PSScriptRoot\..\postgres"
     docker compose -f postgres-compose.yaml up -d
     if ($LASTEXITCODE -ne 0) { throw }
+    Pop-Location
     Center "[+] PostgreSQL + pgAdmin levantados correctamente." Green
 } catch {
     Center ""
@@ -56,16 +57,17 @@ try {
     Center "│  ❌ ERROR: Fallo el despliegue de PostgreSQL/pgAdmin │" Red
     Center "│  Revisa la sintaxis del archivo postgres-compose.   │" Red
     Center "└─────────────────────────────────────────────────────┘" Red
-    Set-Location ".."
+    Pop-Location
     Exit 1
 }
 
 Center ""
 Center "[3/3] 📊 Levantando Pentaho WebSpoon GUI..." Gray
 try {
-    Set-Location "..\pentaho"
+    Push-Location "$PSScriptRoot\..\pentaho"
     docker compose -f pentaho-compose.yaml up -d
     if ($LASTEXITCODE -ne 0) { throw }
+    Pop-Location
     Center "[+] Pentaho WebSpoon levantado correctamente." Green
 } catch {
     Center ""
@@ -73,11 +75,9 @@ try {
     Center "│  ❌ ERROR: Fallo el despliegue de Pentaho WebSpoon   │" Red
     Center "│  Verifica que el puerto 5800 no este ocupado.       │" Red
     Center "└─────────────────────────────────────────────────────┘" Red
-    Set-Location ".."
+    Pop-Location
     Exit 1
 }
-
-Set-Location ".."
 
 Center ""
 Center "=======================================================" Green

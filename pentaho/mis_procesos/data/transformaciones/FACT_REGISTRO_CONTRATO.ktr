@@ -498,11 +498,6 @@
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>sk dim producto</from>
-      <to>Sk dim contrato</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
       <from>sk dim estado contrato</from>
       <to>sk dim fecha (incio)</to>
       <enabled>Y</enabled>
@@ -523,13 +518,43 @@
       <enabled>Y</enabled>
     </hop>
     <hop>
+      <from>lower n init cap estado contrato</from>
+      <to>sk dim cliente</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Input Cliente</from>
+      <to>Sort cod_cliente</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
       <from>Input Registro Contrato</from>
+      <to>Sort cod_cliente </to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Sort cod_cliente</from>
+      <to>cliente + contrato (para obtener sucursal)</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Sort cod_cliente </from>
+      <to>cliente + contrato (para obtener sucursal)</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>cliente + contrato (para obtener sucursal)</from>
       <to>lower n init cap estado contrato</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>lower n init cap estado contrato</from>
-      <to>sk dim cliente</to>
+      <from>sk dim producto</from>
+      <to>sk dim sucursal</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>sk dim sucursal</from>
+      <to>Sk dim contrato</to>
       <enabled>Y</enabled>
     </hop>
   </order>
@@ -553,8 +578,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>672</xloc>
-      <yloc>352</yloc>
+      <xloc>1120</xloc>
+      <yloc>416</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -615,6 +640,10 @@
         <column_name>sk_dim_estado_contrato</column_name>
         <stream_name>sk_dim_estado_contrato</stream_name>
       </field>
+      <field>
+        <column_name>sk_dim_sucursal</column_name>
+        <stream_name>sk_dim_sucursal</stream_name>
+      </field>
     </fields>
     <attributes/>
     <cluster_schema/>
@@ -626,7 +655,7 @@
     </remotesteps>
     <GUI>
       <xloc>432</xloc>
-      <yloc>352</yloc>
+      <yloc>416</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -831,7 +860,7 @@ FROM seguro_g28310422.registro_contrato
     </remotesteps>
     <GUI>
       <xloc>144</xloc>
-      <yloc>64</yloc>
+      <yloc>96</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -879,7 +908,7 @@ FROM seguro_g28310422.registro_contrato
     </remotesteps>
     <GUI>
       <xloc>144</xloc>
-      <yloc>160</yloc>
+      <yloc>192</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -918,8 +947,8 @@ FROM seguro_g28310422.registro_contrato
       </output>
     </remotesteps>
     <GUI>
-      <xloc>368</xloc>
-      <yloc>64</yloc>
+      <xloc>1120</xloc>
+      <yloc>32</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -966,8 +995,8 @@ FROM seguro_g28310422.registro_contrato
       </output>
     </remotesteps>
     <GUI>
-      <xloc>672</xloc>
-      <yloc>64</yloc>
+      <xloc>1120</xloc>
+      <yloc>128</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -1015,7 +1044,7 @@ FROM seguro_g28310422.registro_contrato
     </remotesteps>
     <GUI>
       <xloc>144</xloc>
-      <yloc>240</yloc>
+      <yloc>304</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -1063,7 +1092,7 @@ FROM seguro_g28310422.registro_contrato
     </remotesteps>
     <GUI>
       <xloc>160</xloc>
-      <yloc>352</yloc>
+      <yloc>416</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -1110,8 +1139,8 @@ FROM seguro_g28310422.registro_contrato
       </output>
     </remotesteps>
     <GUI>
-      <xloc>672</xloc>
-      <yloc>240</yloc>
+      <xloc>1120</xloc>
+      <yloc>304</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -1158,8 +1187,259 @@ FROM seguro_g28310422.registro_contrato
       </output>
     </remotesteps>
     <GUI>
-      <xloc>672</xloc>
-      <yloc>160</yloc>
+      <xloc>1120</xloc>
+      <yloc>192</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Input Cliente</name>
+    <type>TableInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>BI-database</connection>
+    <sql>SELECT
+  cod_cliente
+, cod_sucursal
+FROM seguro_g28310422.cliente
+</sql>
+    <limit>0</limit>
+    <lookup/>
+    <execute_each_row>N</execute_each_row>
+    <variables_active>N</variables_active>
+    <lazy_conversion_active>N</lazy_conversion_active>
+    <cached_row_meta_active>N</cached_row_meta_active>
+    <row-meta>
+      <value-meta>
+        <type>Integer</type>
+        <storagetype>normal</storagetype>
+        <name>cod_cliente</name>
+        <length>9</length>
+        <precision>0</precision>
+        <origin>Table input</origin>
+        <comments>cod_cliente</comments>
+        <conversion_Mask>####0;-####0</conversion_Mask>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en</date_format_locale>
+        <date_format_timezone>Etc/UTC</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>Integer</type>
+        <storagetype>normal</storagetype>
+        <name>cod_sucursal</name>
+        <length>9</length>
+        <precision>0</precision>
+        <origin>Table input</origin>
+        <comments>cod_sucursal</comments>
+        <conversion_Mask>####0;-####0</conversion_Mask>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en</date_format_locale>
+        <date_format_timezone>Etc/UTC</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+    </row-meta>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>144</xloc>
+      <yloc>32</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Sort cod_cliente</name>
+    <type>SortRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <directory>%%java.io.tmpdir%%</directory>
+    <prefix>out</prefix>
+    <sort_size>1000000</sort_size>
+    <free_memory/>
+    <compress>N</compress>
+    <compress_variable/>
+    <unique_rows>N</unique_rows>
+    <fields>
+      <field>
+        <name>cod_cliente</name>
+        <ascending>Y</ascending>
+        <case_sensitive>N</case_sensitive>
+        <collator_enabled>N</collator_enabled>
+        <collator_strength>0</collator_strength>
+        <presorted>N</presorted>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>344</xloc>
+      <yloc>32</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Sort cod_cliente </name>
+    <type>SortRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <directory>%%java.io.tmpdir%%</directory>
+    <prefix>out</prefix>
+    <sort_size>1000000</sort_size>
+    <free_memory/>
+    <compress>N</compress>
+    <compress_variable/>
+    <unique_rows>N</unique_rows>
+    <fields>
+      <field>
+        <name>cod_cliente</name>
+        <ascending>Y</ascending>
+        <case_sensitive>N</case_sensitive>
+        <collator_enabled>N</collator_enabled>
+        <collator_strength>0</collator_strength>
+        <presorted>N</presorted>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>344</xloc>
+      <yloc>96</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>cliente + contrato (para obtener sucursal)</name>
+    <type>MergeJoin</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <join_type>INNER</join_type>
+    <step1>Sort cod_cliente</step1>
+    <step2>Sort cod_cliente </step2>
+    <keys_1>
+      <key>cod_cliente</key>
+    </keys_1>
+    <keys_2>
+      <key>cod_cliente</key>
+    </keys_2>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>720</xloc>
+      <yloc>32</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>sk dim sucursal</name>
+    <type>DBLookup</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>BI-database</connection>
+    <cache>Y</cache>
+    <cache_load_all>N</cache_load_all>
+    <cache_size>0</cache_size>
+    <lookup>
+      <schema>seguro_dw_g28310422</schema>
+      <table>dim_sucursal</table>
+      <orderby/>
+      <fail_on_multiple>N</fail_on_multiple>
+      <eat_row_on_failure>N</eat_row_on_failure>
+      <key>
+        <name>cod_sucursal</name>
+        <field>cod_sucursal</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <value>
+        <name>sk_dim_sucursal</name>
+        <rename>sk_dim_sucursal</rename>
+        <default/>
+        <type>None</type>
+      </value>
+    </lookup>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>688</xloc>
+      <yloc>192</yloc>
       <draw>Y</draw>
     </GUI>
   </step>

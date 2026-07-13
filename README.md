@@ -1,182 +1,244 @@
-<div align="center">
-
-# 🚀 Entorno BI: PostgreSQL + Pentaho Spoon
-
-**Entorno analítico replicable vía Docker — aislado, portable y listo para desarrollar ETLs.**
-
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
-![pgAdmin](https://img.shields.io/badge/pgAdmin_4-9-1E8CBE?style=for-the-badge&logo=postgresql&logoColor=white)
-![Pentaho](https://img.shields.io/badge/Pentaho_Spoon-0.9.0-FF5E00?style=for-the-badge&logoColor=white)
-![PowerShell](https://img.shields.io/badge/PowerShell-7.4-5391FE?style=for-the-badge&logo=powershell&logoColor=white)
-![WSL2](https://img.shields.io/badge/WSL_2-4EAA25?style=for-the-badge&logo=linux&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL_18-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![pgAdmin](https://img.shields.io/badge/pgAdmin_4-1E8CBE?style=for-the-badge&logo=postgresql&logoColor=white)
+![Pentaho](https://img.shields.io/badge/Pentaho_Spoon-FF5E00?style=for-the-badge&logoColor=white)
+![Power BI](https://img.shields.io/badge/Power_BI-F2C811?style=for-the-badge&logo=powerbi&logoColor=black)
+![PowerShell](https://img.shields.io/badge/PowerShell_5.1+-5391FE?style=for-the-badge&logo=powershell&logoColor=white)
+![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
 
-</div>
+# 🚀 Entorno BI: Seguros
 
----
-
-## 📋 Requisitos previos
-
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) con **WSL 2** como backend
-- PowerShell **5.1+** (viene incluido en Windows 10/11)
+**PostgreSQL + Pentaho Spoon + Power BI** — Sistema completo de inteligencia de negocios para una aseguradora, 100% Docker.
 
 ---
 
-## 📁 Estructura del proyecto
+## 📋 Requisitos
+
+[Docker Desktop](https://www.docker.com/products/docker-desktop/) con WSL 2 · PowerShell 5.1+
+
+## 📁 Estructura
 
 ```
 D:\DockerData\bi\
-├── postgres\
-│   ├── postgres-compose.yaml  <- Base de datos + pgAdmin 4
-│   ├── db_setup\              <- Scripts SQL e hidratacion
-│   └── data\                  <- Datos persistentes
-├── pentaho\
-│   ├── pentaho-compose.yaml   <- Pentaho Spoon web
-│   └── mis_procesos\          <- .ktr, .kjb, .js
-├── run.ps1                    <- Encender todo
-├── stop.ps1                   <- Detener contenedores (menu)
-└── menu.ps1                   <- Menu principal
+│
+├── scripts_helpers\           ← Todos los scripts .ps1
+├── postgres\                  ← PostgreSQL + pgAdmin + SQL scripts
+├── pentaho\                   ← Pentaho Spoon + ETLs + Excel fuente
+├── enunciado proy\            ← PDFs del proyecto (Fase I y II)
+├── power-bi\                  ← Dashboard .pbix + temas .json
+├── menu.bat                   ← Acceso directo (doble click)
+└── AGENTS.md                  ← Instrucciones para el agente
 ```
 
 ---
 
-## ⚙️ Setup inicial (solo una vez)
+## 🚀 Cómo empezar
 
-Si es la primera vez que abres PowerShell en esta máquina, es probable que tengas restringida la ejecución de scripts. Puedes verificarlo con:
+```batch
+menu.bat
+```
+
+O desde PowerShell:
 
 ```powershell
-Get-ExecutionPolicy
+.\scripts_helpers\menu.ps1
 ```
 
-Si devuelve `Restricted`, habilita la ejecución (recomendado):
+```
+▄████▄ ▄▄▄▄  ▄▄▄▄  ▄▄▄▄   ▄▄▄   ▄▄▄   ▄▄▄▄ ▄▄ ▄▄   ▄█████  ▄▄▄  ▄▄▄▄▄ ▄▄▄▄▄▄
+██▄▄██ ██▄█▀ ██▄█▀ ██▄█▄ ██▀██ ██▀██ ██▀▀▀ ██▄██   ▀▀▀▄▄▄ ██▀██ ██▄▄    ██
+██  ██ ██    ██    ██ ██ ▀███▀ ██▀██ ▀████ ██ ██   █████▀ ▀███▀ ██      ██
 
-```powershell
-Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+============================================
+          MENU PRINCIPAL
+============================================
+
+--- ENTORNO ---
+[1]  Iniciar entorno
+[2]  Detener entorno
+
+--- DATOS ---
+[3]  Generar e Hidratar BD
+[4]  Ejecutar inserts defensa
+
+--- MANTENIMIENTO ---
+[5]  Limpiar DB schemas
+
+[6]  Salir
+
+============================================
 ```
 
-Luego confirma con `S` (Sí). A partir de ese momento podrás ejecutar cualquier `.ps1` sin necesidad del flag `-ExecutionPolicy Bypass`.
+| # | Opción | Descripción |
+|---|--------|-------------|
+| 1 | **Iniciar entorno** | Levanta PostgreSQL, pgAdmin y Pentaho Spoon |
+| 2 | **Detener entorno** | Abre sub-menú para detener contenedores |
+| 3 | **Generar e Hidratar BD** | Crea esquemas OLTP + DW y los llena con datos |
+| 4 | **Ejecutar inserts defensa** | Inserta ~6,000 registros adicionales |
+| 5 | **Limpiar DB schemas** | Abre sub-menú para truncar esquemas |
+| 6 | **Salir** | Cierra el menú |
 
 ---
 
-## 🚦 Flujo de trabajo diario
+## 🛑 Sub-menú: Detener entorno (opción 2)
 
-Desde la raíz del proyecto (`D:\DockerData\bi\`):
+```
+============================================
+          STOP - DETENER ENTORNO
+============================================
 
-```powershell
-.\menu.ps1
+        [1]  PostgreSQL + pgAdmin
+        [2]  Pentaho WebSpoon
+        [3]  Todos los contenedores
+        [4]  Salir
+
+============================================
 ```
 
-Esto abre un menu con todas las operaciones del entorno:
+| Opción | Acción |
+|--------|--------|
+| 1 | Detiene solo PostgreSQL y pgAdmin |
+| 2 | Detiene solo Pentaho Spoon |
+| 3 | Detiene todos los contenedores |
+| 4 | Vuelve al menú principal |
 
-1. **Iniciar entorno** — ejecuta `run.ps1` (red, PostgreSQL, pgAdmin, Pentaho).
-2. **Detener entorno** — ejecuta `stop.ps1` con opcion de borrar volumenes.
-3. **Hidratar base de datos** — ejecuta `run_hidratation.ps1` para poblar la BD con datos de prueba.
-4. **Salir**
+> [!NOTE]
+> Antes de apagar pregunta si deseas eliminar los volúmenes de datos. Si respondes que sí, se borra toda la información persistente.
 
-Si se prefiere ejecutar un paso directamente:
+---
 
-```powershell
-.\run.ps1    # Solo encender
-.\stop.ps1   # Solo detener
+## 💧 Sub-menú: Generar e Hidratar BD (opción 3)
+
+| Paso | Descripción |
+|------|-------------|
+| 1 | Verifica que el contenedor PostgreSQL esté corriendo |
+| 2 | Verifica los archivos SQL (`create_tables.sql` + `hidrate.sql`) |
+| 3 | Muestra advertencia si los esquemas ya existen y pide confirmación |
+| 4 | Ejecuta los scripts: borra esquemas → crea tablas → inserta datos |
+
+| Schema | Tipo | Contenido |
+|--------|------|-----------|
+| `SEGURO_G28310422` | OLTP | 12 tablas relacionales (~200 clientes, ~2000 contratos) |
+| `SEGURO_DW_G28310422` | DW | 8 dimensiones + 4 tablas de hechos *(vacías — se llenan con ETLs)* |
+
+> [!CAUTION]
+> **Destructivo:** Borra y recrea ambos esquemas desde cero cada vez.
+
+Al finalizar muestra conteo de registros por tabla y arte ASCII.
+
+---
+
+## 🎯 Sub-menú: Ejecutar inserts defensa (opción 4)
+
+| Paso | Descripción |
+|------|-------------|
+| 1 | Verifica el contenedor PostgreSQL |
+| 2 | Escanea el archivo SQL y cuenta los inserts por tabla |
+| 3 | Muestra el desglose de registros a insertar y pide confirmación |
+| 4 | Ejecuta todos los inserts en una sola transacción |
+
+| Tabla | Registros |
+|-------|:---------:|
+| PRODUCTO | 9 |
+| CLIENTE | 400 |
+| CONTRATO | 1,200 |
+| REGISTRO_CONTRATO | 1,800 |
+| SINIESTRO | 600 |
+| REGISTRO_SINIESTRO | 600 |
+| RECOMIENDA | 1,400 |
+| **Total** | **6,009** |
+
+> [!TIP]
+> Después de insertar, ejecuta las ETLs correspondientes en Pentaho para poblar el DW.
+
+---
+
+## 🧹 Sub-menú: Limpiar DB schemas (opción 5)
+
+```
+============================================
+          LIMPIEZA DE ESQUEMAS
+============================================
+
+        [1]  Limpiar toda la BD (OLTP - DW)
+        [2]  Limpiar solo el DW
+        [3]  Volver
+
+============================================
 ```
 
-Si ya configuraste la **ExecutionPolicy** como se indicó arriba, basta con el nombre del script. Caso contrario:
+| Opción | Acción |
+|--------|--------|
+| 1 | Trunca todas las tablas de **OLTP + DW** |
+| 2 | Trunca solo las tablas del **Data Warehouse** |
+| 3 | Vuelve al menú principal |
 
-```powershell
-powershell -ExecutionPolicy Bypass -File .\menu.ps1
+> [!NOTE]
+> Usa `TRUNCATE ... CASCADE`. Los esquemas y la estructura de tablas se conservan intactos.
+
+---
+
+## 🌐 Acceso a servicios
+
+| Servicio | URL | Usuario | Clave |
+|----------|-----|---------|-------|
+| 🐘 pgAdmin 4 | http://localhost:8081 | admin@correo.com | `admin` |
+| 📊 Pentaho Spoon | http://localhost:5800/spoon/spoon | admin | `password` |
+| 🗄️ PostgreSQL | localhost:5432 | postgres | `postgres` |
+
+---
+
+## ⚠️ Configuración en Pentaho
+
+> [!IMPORTANT]
+> La conexión a la BD debe usar `postgres_db` como host (nombre del servicio Docker), **no** `localhost`.
+
+**Guardar ETLs:** Guarda en `/home/tomcat/.kettle` dentro de Spoon; los archivos aparecen en `pentaho\mis_procesos\`.
+
+| Ruta | Contenido |
+|------|-----------|
+| `pentaho\mis_procesos\data\transformaciones\` | 12 ETLs `.ktr` + 1 Job `.kjb` |
+| `pentaho\mis_procesos\data\xlsx\` | Archivo Excel fuente de metas |
+
+---
+
+## 📊 Data Warehouse
+
+| Tipo | Tablas |
+|------|--------|
+| 📐 **Dimensiones** | DIM_TIEMPO, DIM_CLIENTE, DIM_PRODUCTO, DIM_CONTRATO, DIM_SUCURSAL, DIM_ESTADO_CONTRATO, DIM_EVALUACION_SERVICIO, DIM_SINIESTRO |
+| 📊 **Hechos** | FACT_REGISTRO_CONTRATO, FACT_REGISTRO_SINIESTRO, FACT_EVALUACION_SERVICIO, FACT_METAS |
+
+**Orden de ejecución de ETLs:**
+
+```
+ 1. DIM_TIEMPO              2. DIM_CLIENTE
+ 3. DIM_CONTRATO             4. DIM_ESTADO_CONTRATO
+ 5. DIM_EVALUACION_SERVICIO  6. DIM_PRODUCTO
+ 7. DIM_SINIESTRO            8. DIM_SUCURSAL
+    ─────────────────────────────
+ 9. FACT_EVALUACION_SERVICIO
+10. FACT_METAS
+11. FACT_REGISTRO_CONTRATO
+12. FACT_REGISTRO_SINIESTRO
 ```
 
 ---
 
-## 🌐 Acceso a los servicios
+## 📈 Power BI
 
-| Servicio       | URL                              | Usuario            | Contraseña |
-|----------------|----------------------------------|--------------------|------------|
-| **pgAdmin 4**  | http://localhost:8081            | admin@correo.com   | `admin`    |
-| **Pentaho Spoon** | http://localhost:5800         | —                  | —          |
-
----
-
-## ⚠️ Configuración crítica dentro de Pentaho
-
-### 1. Conexión a la base de datos
-
-Cuando crees una nueva conexión a PostgreSQL dentro de la web de Spoon, en el campo **Host Name** NO escribas `localhost`. Debes escribir el nombre del **servicio Docker**:
-
-> **Host:** `postgres_db`
-
-### 2. Ruta de guardado de ETLs
-
-Al guardar tus flujos (`.ktr` / `.kjb`) dentro de la interfaz web, elige la carpeta:
-
-```
-/home/tomcat/.kettle
-```
-
-Al hacerlo, tus archivos aparecerán **automáticamente** en tu Windows real en:
-
-```
-D:\DockerData\bi\pentaho\mis_procesos\
-```
+| Recurso | Ruta |
+|---------|------|
+| Dashboard | `power-bi\dashboard-seguros-alta-vista.pbix` |
+| Temas | `power-bi\*.json` |
 
 ---
 
-## 💧 Hidratar la base de datos
+## 🔧 Infraestructura
 
-Una vez que el entorno esta encendido, puebla la BD con datos de prueba (200 clientes, 2000 contratos, etc.):
+- Dos stacks de Docker comparten la red externa `red_datos`
+- Datos persistentes: `postgres\data\` (git-ignored)
+- Workspace ETL: `pentaho\mis_procesos\` (git-ignored)
+- Probado en Windows (PowerShell 5.1+, Docker Desktop con WSL2); compatible con Linux/macOS (PowerShell 7+)
 
-```powershell
-.\postgres\db_setup\run_hidratation.ps1
-```
-
-O desde el menu principal (`.\menu.ps1`), opcion **3**.
-
-El script crea el esquema `SEGURO_G28310422` con 12 tablas (paises, ciudades, sucursales, productos, clientes, contratos, siniestros, evaluaciones) y lo llena con datos realistas.
-
----
-
-## 🛑 Apagar el entorno
-
-```powershell
-.\stop.ps1
-```
-
-Menu interactivo para detener:
-
-1. **PostgreSQL + pgAdmin**
-2. **Pentaho WebSpoon**
-3. **Todos los contenedores**
-
-Antes de detener pregunta si se desea eliminar los volumenes de datos (borra toda la informacion persistente).
-
----
-
-## 📜 Referencia de scripts
-
-### `run.ps1`
-
-Levanta todo el entorno:
-1. Crea la red `red_datos` si no existe.
-2. `docker compose up -d` en `postgres/` (PostgreSQL + pgAdmin).
-3. `docker compose up -d` en `pentaho/` (Pentaho Spoon).
-
-### `stop.ps1`
-
-Menu interactivo para detener contenedores:
-
-- Opcion 1: detiene solo PostgreSQL + pgAdmin.
-- Opcion 2: detiene solo Pentaho Spoon.
-- Opcion 3: detiene ambos.
-- Antes de ejecutar `docker compose down`, pregunta si se deben eliminar los volumenes (`-v`).
-
-### `menu.ps1`
-
-Menu principal que agrupa las tres operaciones basicas del entorno:
-
-1. **Iniciar** -> ejecuta `run.ps1`
-2. **Detener** -> ejecuta `stop.ps1`
-3. **Hidratar** -> ejecuta `postgres/db_setup/run_hidratation.ps1`
-4. **Salir**
-
----
 

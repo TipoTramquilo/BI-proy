@@ -83,14 +83,14 @@ do {
 
     switch ($choice) {
         '1' {
-            Stop-Containers -ComposeFile "postgres\postgres-compose.yaml" -DisplayName "PostgreSQL + pgAdmin"
+            Stop-Containers -ComposeFile "..\postgres\postgres-compose.yaml" -DisplayName "PostgreSQL + pgAdmin"
         }
         '2' {
-            Stop-Containers -ComposeFile "pentaho\pentaho-compose.yaml" -DisplayName "Pentaho WebSpoon"
+            Stop-Containers -ComposeFile "..\pentaho\pentaho-compose.yaml" -DisplayName "Pentaho WebSpoon"
         }
         '3' {
-            Stop-Containers -ComposeFile "postgres\postgres-compose.yaml" -DisplayName "PostgreSQL + pgAdmin"
-            Stop-Containers -ComposeFile "pentaho\pentaho-compose.yaml" -DisplayName "Pentaho WebSpoon"
+            Stop-Containers -ComposeFile "..\postgres\postgres-compose.yaml" -DisplayName "PostgreSQL + pgAdmin"
+            Stop-Containers -ComposeFile "..\pentaho\pentaho-compose.yaml" -DisplayName "Pentaho WebSpoon"
         }
         '4' {
             Center "`nSaliendo..." Yellow
