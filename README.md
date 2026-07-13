@@ -34,10 +34,13 @@ D:\DockerData\bi\
 
 ## 🚀 Cómo empezar
 
+> [!IMPORTANT]
+> En el root del proy ejecutar:
 
-```powershell
-.\menu.bat
+```bash
+menu.bat
 ```
+
 
 ```
 ▄████▄ ▄▄▄▄  ▄▄▄▄  ▄▄▄▄   ▄▄▄   ▄▄▄   ▄▄▄▄ ▄▄ ▄▄   ▄█████  ▄▄▄  ▄▄▄▄▄ ▄▄▄▄▄▄
