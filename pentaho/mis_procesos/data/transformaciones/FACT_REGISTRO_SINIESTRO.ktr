@@ -470,7 +470,7 @@ Flujo: Mantiene el flujo limpio y secuencial</note>
       <xloc>208</xloc>
       <yloc>640</yloc>
       <width>750</width>
-      <heigth>168</heigth>
+      <heigth>170</heigth>
       <fontname>Verdana, "Lucida Sans", Arial, Helvetica, sans-serif</fontname>
       <fontsize>14</fontsize>
       <fontbold>N</fontbold>
@@ -632,7 +632,7 @@ Flujo: Mantiene el flujo limpio y secuencial</note>
     <hop>
       <from>Fact Registro Siniestro Output</from>
       <to>Error Handling ETL</to>
-      <enabled>N</enabled>
+      <enabled>Y</enabled>
     </hop>
   </order>
   <step>
@@ -676,7 +676,7 @@ Flujo: Mantiene el flujo limpio y secuencial</note>
     <table>fact_registro_siniestro</table>
     <commit>1000</commit>
     <truncate>N</truncate>
-    <ignore_errors>Y</ignore_errors>
+    <ignore_errors>N</ignore_errors>
     <use_batch>N</use_batch>
     <specify_fields>N</specify_fields>
     <partitioning_enabled>N</partitioning_enabled>
@@ -1774,7 +1774,7 @@ FROM seguro_g28310422.registro_siniestro
     <error>
       <source_step>Fact Registro Siniestro Output</source_step>
       <target_step>Error Handling ETL</target_step>
-      <is_enabled>N</is_enabled>
+      <is_enabled>Y</is_enabled>
       <nr_valuename>cant_errores</nr_valuename>
       <descriptions_valuename>motivo_error</descriptions_valuename>
       <fields_valuename>campo_error</fields_valuename>

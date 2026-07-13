@@ -545,7 +545,7 @@
     <hop>
       <from>Fact Evaluacion Servicio Output</from>
       <to>Error Handling ETL</to>
-      <enabled>N</enabled>
+      <enabled>Y</enabled>
     </hop>
     <hop>
       <from>sk dim producto</from>
@@ -706,7 +706,7 @@
     <table>fact_evaluacion_servicio</table>
     <commit>1000</commit>
     <truncate>N</truncate>
-    <ignore_errors>Y</ignore_errors>
+    <ignore_errors>N</ignore_errors>
     <use_batch>N</use_batch>
     <specify_fields>N</specify_fields>
     <partitioning_enabled>N</partitioning_enabled>
@@ -1390,7 +1390,7 @@ FROM seguro_g28310422.registro_contrato
     <error>
       <source_step>Fact Evaluacion Servicio Output</source_step>
       <target_step>Error Handling ETL</target_step>
-      <is_enabled>N</is_enabled>
+      <is_enabled>Y</is_enabled>
       <nr_valuename/>
       <descriptions_valuename>error_msg</descriptions_valuename>
       <fields_valuename/>
