@@ -1,0 +1,19 @@
+# Postgres data persistence (auto-created)
+postgres/data/
+
+# Pentaho ETL workspace — rules in pentaho/mis_procesos/.gitignore
+pentaho/mis_procesos/*.backup
+
+# Original instructions (not needed in the repo)
+explain.txt
+
+# AI agent instructions (local config — not for repo)
+AGENTS.md
+
+pentaho/mis_procesos/data/BIProyecto-main/
+
+# Ignorar la caché y configuraciones que están dentro de .kettle
+pentaho/mis_procesos/db.cache*
+pentaho/mis_procesos/.spoonrc
+pentaho/mis_procesos/xulSettings.properties
+pentaho/mis_procesos/shared.xml.backup
