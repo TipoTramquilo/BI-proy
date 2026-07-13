@@ -546,12 +546,12 @@
     <hop>
       <from>Renombrar</from>
       <to>DIM TIEMPO</to>
-      <enabled>Y</enabled>
+      <enabled>N</enabled>
     </hop>
     <hop>
       <from>DIM TIEMPO</from>
       <to>Error Handling</to>
-      <enabled>Y</enabled>
+      <enabled>N</enabled>
     </hop>
   </order>
   <step>
@@ -1916,7 +1916,7 @@
         <rename>cod_mes</rename>
       </field>
       <field>
-        <name>DayOfWeek</name>
+        <name>DayOfMonth</name>
         <rename>cod_dia</rename>
       </field>
       <field>
@@ -2111,7 +2111,7 @@
     <error>
       <source_step>DIM TIEMPO</source_step>
       <target_step>Error Handling</target_step>
-      <is_enabled>Y</is_enabled>
+      <is_enabled>N</is_enabled>
       <nr_valuename/>
       <descriptions_valuename>error sql</descriptions_valuename>
       <fields_valuename/>
