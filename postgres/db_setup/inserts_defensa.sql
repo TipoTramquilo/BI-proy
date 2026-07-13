@@ -1,6 +1,17 @@
--- ============================================================
--- INSERTS PARA DEFENSA
--- ============================================================
+-- =========================================
+-- [!] IMPORTANTE [!]
+-- =========================================
+-- Antes de ejecutar este script, debes
+-- haber ejecutado:
+--   1. create_tables.sql
+--   2. hidrate.sql
+-- (opcion 3 del menu: Generar e Hidratar BD)
+--
+-- Este script solo agrega ~6,000 registros
+-- adicionales de defensa y requiere que las
+-- tablas ya existan con su data inicial.
+-- =========================================
+--
 -- LUEGO DE INSERTAR, CORRER ESTAS ETLs EN PENTAHO:
 --
 --   1. DIM_CLIENTE

@@ -34,10 +34,13 @@ D:\DockerData\bi\
 
 ## 🚀 Cómo empezar
 
+> [!IMPORTANT]
+> En el root del proy ejecutar:
 
-```powershell
-.\scripts_helpers\menu.ps1
+```bash
+menu.bat
 ```
+
 
 ```
 ▄████▄ ▄▄▄▄  ▄▄▄▄  ▄▄▄▄   ▄▄▄   ▄▄▄   ▄▄▄▄ ▄▄ ▄▄   ▄█████  ▄▄▄  ▄▄▄▄▄ ▄▄▄▄▄▄
@@ -238,6 +241,8 @@ Al finalizar muestra conteo de registros por tabla y arte ASCII.
 - Dos stacks de Docker comparten la red externa `red_datos`
 - Datos persistentes: `postgres\data\` (git-ignored)
 - Workspace ETL: `pentaho\mis_procesos\` (git-ignored)
+> [!IMPORTANT]
+> La ruta `pentaho\mis_procesos\data` no está ignorada asi como tampoco `pentaho\shared.xml` y `pentaho\kettle.properties` porque la idea es que el entorno sea reutilizable
 - Probado en Windows (PowerShell 5.1+, Docker Desktop con WSL2); compatible con Linux/macOS (PowerShell 7+)
 
 
