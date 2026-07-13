@@ -8,7 +8,7 @@
 
 # 🚀 Entorno BI: Seguros
 
-**PostgreSQL + Pentaho Spoon + Power BI** — Sistema completo de inteligencia de negocios para una aseguradora, 100% Docker.
+**PostgreSQL + Pentaho Spoon + Power BI** — Sistema completo BI, 100% Docker.
 
 ---
 
@@ -34,11 +34,6 @@ D:\DockerData\bi\
 
 ## 🚀 Cómo empezar
 
-```batch
-menu.bat
-```
-
-O desde PowerShell:
 
 ```powershell
 .\scripts_helpers\menu.ps1
@@ -212,7 +207,7 @@ Al finalizar muestra conteo de registros por tabla y arte ASCII.
 **Orden de ejecución de ETLs:**
 
 ```
- 1. DIM_TIEMPO              2. DIM_CLIENTE
+ 1. DIM_TIEMPO               2. DIM_CLIENTE
  3. DIM_CONTRATO             4. DIM_ESTADO_CONTRATO
  5. DIM_EVALUACION_SERVICIO  6. DIM_PRODUCTO
  7. DIM_SINIESTRO            8. DIM_SUCURSAL
@@ -222,6 +217,10 @@ Al finalizar muestra conteo de registros por tabla y arte ASCII.
 11. FACT_REGISTRO_CONTRATO
 12. FACT_REGISTRO_SINIESTRO
 ```
+
+> [!IMPORTANT]
+> La unica restricción es ejecutar primero las DIM y luego los FACT, lo de arriba solo es una sugerencia.
+
 
 ---
 
