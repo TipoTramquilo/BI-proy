@@ -490,7 +490,7 @@
     <hop>
       <from>Fact Registro Contrato Output</from>
       <to>Error handling Inserts</to>
-      <enabled>N</enabled>
+      <enabled>Y</enabled>
     </hop>
     <hop>
       <from>Sk dim contrato</from>
@@ -1447,7 +1447,7 @@ FROM seguro_g28310422.registro_contrato
     <error>
       <source_step>Fact Registro Contrato Output</source_step>
       <target_step>Error handling Inserts</target_step>
-      <is_enabled>N</is_enabled>
+      <is_enabled>Y</is_enabled>
       <nr_valuename>cant_errores</nr_valuename>
       <descriptions_valuename>motivo_error</descriptions_valuename>
       <fields_valuename>campo_error</fields_valuename>
