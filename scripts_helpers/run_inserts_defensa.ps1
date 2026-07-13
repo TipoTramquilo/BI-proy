@@ -11,6 +11,31 @@ function Center($t, $c = "White") {
     Write-Host "$p$t" -ForegroundColor $c
 }
 
+Write-Host ""
+Center "=========================================" Red
+Center "  [!] IMPORTANTE [!]" Red
+Center "=========================================" Red
+Center "  Antes de ejecutar este script, debes" Red
+Center "  haber ejecutado:" Red
+Center "    1. create_tables.sql" Red
+Center "    2. hidrate.sql" Red
+Center "  (opcion 3 del menu: Generar e Hidratar BD)" Red
+Center "" Red
+Center "  Este script solo agrega ~6,000 registros" Red
+Center "  adicionales de defensa y requiere que las" Red
+Center "  tablas ya existan con su data inicial." Red
+Center "=========================================" Red
+Write-Host ""
+$prompt = "Seguro que deseas continuar? (y/N)"
+$pw = $Host.UI.RawUI.BufferSize.Width
+$pp = " " * [math]::Max(0, [math]::Floor(($pw - $prompt.Length) / 2))
+$resp = Read-Host "$pp$prompt"
+if ($resp -ne "y" -and $resp -ne "Y") {
+    Center "Cancelado por el usuario." Yellow
+    Exit 0
+}
+Clear-Host
+
 Center "=======================================================" Cyan
 Center "INSERTANDO DATOS DE DEFENSA" Cyan
 Center "=======================================================" Cyan
@@ -163,4 +188,4 @@ if ($artLines) {
     foreach ($line in $artLines) { Write-Host "$pad$line" -ForegroundColor Red }
 }
 
-Center "Ingresando a Memento" -ForegroundColor Red
+Center "Ingresando a Mementos `n`n" Red
