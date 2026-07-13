@@ -522,6 +522,11 @@
       <to>Transformar fechas y monto meta ingreso</to>
       <enabled>Y</enabled>
     </hop>
+    <hop>
+      <from>Fact Metas Output</from>
+      <to>Error Handling</to>
+      <enabled>N</enabled>
+    </hop>
   </order>
   <step>
     <name>Crear Rango Año</name>
@@ -577,6 +582,31 @@ var fecha_fin = anio + "-12-31";
     <GUI>
       <xloc>368</xloc>
       <yloc>48</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Error Handling</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>96</xloc>
+      <yloc>272</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -1072,12 +1102,12 @@ var fecha_fin = anio + "-12-31";
   <step_error_handling>
     <error>
       <source_step>Fact Metas Output</source_step>
-      <target_step/>
-      <is_enabled>Y</is_enabled>
-      <nr_valuename>xd</nr_valuename>
-      <descriptions_valuename>xd</descriptions_valuename>
-      <fields_valuename>xd</fields_valuename>
-      <codes_valuename>xd</codes_valuename>
+      <target_step>Error Handling</target_step>
+      <is_enabled>N</is_enabled>
+      <nr_valuename/>
+      <descriptions_valuename>error sql</descriptions_valuename>
+      <fields_valuename/>
+      <codes_valuename/>
       <max_errors/>
       <max_pct_errors/>
       <min_pct_rows/>

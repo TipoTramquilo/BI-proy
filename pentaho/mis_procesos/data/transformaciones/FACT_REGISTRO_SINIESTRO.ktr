@@ -632,7 +632,7 @@ Flujo: Mantiene el flujo limpio y secuencial</note>
     <hop>
       <from>Fact Registro Siniestro Output</from>
       <to>Error Handling ETL</to>
-      <enabled>Y</enabled>
+      <enabled>N</enabled>
     </hop>
   </order>
   <step>
@@ -1774,7 +1774,7 @@ FROM seguro_g28310422.registro_siniestro
     <error>
       <source_step>Fact Registro Siniestro Output</source_step>
       <target_step>Error Handling ETL</target_step>
-      <is_enabled>Y</is_enabled>
+      <is_enabled>N</is_enabled>
       <nr_valuename>cant_errores</nr_valuename>
       <descriptions_valuename>motivo_error</descriptions_valuename>
       <fields_valuename>campo_error</fields_valuename>

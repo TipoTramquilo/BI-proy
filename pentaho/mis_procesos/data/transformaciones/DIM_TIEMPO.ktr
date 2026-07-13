@@ -548,6 +548,11 @@
       <to>DIM TIEMPO</to>
       <enabled>Y</enabled>
     </hop>
+    <hop>
+      <from>DIM TIEMPO</from>
+      <to>Error Handling</to>
+      <enabled>Y</enabled>
+    </hop>
   </order>
   <step>
     <name>2000 dias 5+ años</name>
@@ -1170,6 +1175,31 @@
     </remotesteps>
     <GUI>
       <xloc>432</xloc>
+      <yloc>208</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Error Handling</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>912</xloc>
       <yloc>208</yloc>
       <draw>Y</draw>
     </GUI>
@@ -2078,6 +2108,18 @@
     </GUI>
   </step>
   <step_error_handling>
+    <error>
+      <source_step>DIM TIEMPO</source_step>
+      <target_step>Error Handling</target_step>
+      <is_enabled>Y</is_enabled>
+      <nr_valuename/>
+      <descriptions_valuename>error sql</descriptions_valuename>
+      <fields_valuename/>
+      <codes_valuename/>
+      <max_errors/>
+      <max_pct_errors/>
+      <min_pct_rows/>
+    </error>
   </step_error_handling>
   <slave-step-copy-partition-distribution>
   </slave-step-copy-partition-distribution>
