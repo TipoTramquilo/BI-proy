@@ -36,7 +36,7 @@ D:\DockerData\bi\
 
 
 ```powershell
-.\scripts_helpers\menu.ps1
+.\menu.bat
 ```
 
 ```
