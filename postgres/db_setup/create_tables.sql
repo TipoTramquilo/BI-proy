@@ -256,6 +256,7 @@ create table FACT_REGISTRO_CONTRATO (
     sk_dim_tiempo_fecha_fin int not null,
     sk_dim_cliente int not null,
     sk_dim_contrato int not null,
+    sk_dim_sucursal int not null,
     sk_dim_producto int not null,
     sk_dim_estado_contrato int not null,
     monto real,
@@ -267,6 +268,7 @@ create table FACT_REGISTRO_CONTRATO (
     constraint fk_fact_contrato_fin foreign key (sk_dim_tiempo_fecha_fin) references DIM_TIEMPO(sk_dim_tiempo),
     constraint fk_fact_contrato_cliente foreign key (sk_dim_cliente) references DIM_CLIENTE(sk_dim_cliente),
     constraint fk_fact_contrato_contrato foreign key (sk_dim_contrato) references DIM_CONTRATO(sk_dim_contrato),
+    constraint fk_fact_contrato_sucursal foreign key (sk_dim_sucursal) references DIM_SUCURSAL(sk_dim_sucursal),
     constraint fk_fact_contrato_producto foreign key (sk_dim_producto) references DIM_PRODUCTO(sk_dim_producto),
     constraint fk_fact_contrato_estado foreign key (sk_dim_estado_contrato) references DIM_ESTADO_CONTRATO(sk_dim_estado_contrato),
 
@@ -274,7 +276,8 @@ create table FACT_REGISTRO_CONTRATO (
         sk_dim_tiempo_fecha_inicio, 
         sk_dim_tiempo_fecha_fin, 
         sk_dim_cliente, 
-        sk_dim_contrato, 
+        sk_dim_contrato,
+        sk_dim_sucursal, 
         sk_dim_producto
     ) 
 );
