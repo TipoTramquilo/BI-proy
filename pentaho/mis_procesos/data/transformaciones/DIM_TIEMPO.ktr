@@ -546,12 +546,12 @@
     <hop>
       <from>Renombrar</from>
       <to>DIM TIEMPO</to>
-      <enabled>N</enabled>
+      <enabled>Y</enabled>
     </hop>
     <hop>
       <from>DIM TIEMPO</from>
       <to>Error Handling</to>
-      <enabled>N</enabled>
+      <enabled>Y</enabled>
     </hop>
   </order>
   <step>
@@ -2111,7 +2111,7 @@
     <error>
       <source_step>DIM TIEMPO</source_step>
       <target_step>Error Handling</target_step>
-      <is_enabled>N</is_enabled>
+      <is_enabled>Y</is_enabled>
       <nr_valuename/>
       <descriptions_valuename>error sql</descriptions_valuename>
       <fields_valuename/>
